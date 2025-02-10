@@ -11,4 +11,6 @@ class EmailSerializer(serializers.Serializer):
     sender = serializers.CharField()
     subject = serializers.CharField()
     snippet = serializers.CharField()
+    body = serializers.CharField()
+    labelIds = serializers.ListField()
     threadId = serializers.CharField()

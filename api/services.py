@@ -1,6 +1,8 @@
 import os
 import base64
 import re
+import subprocess
+import datetime
 from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -29,25 +31,29 @@ def get_gmail_service():
             token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
+
     return service
 
 
 def get_unread_emails():
     try:
         service = get_gmail_service()
-        results = service.users().messages().list(userId='me', labelIds=['INBOX', 'IMPORTANT'], q="is:unread").execute()
+        results = service.users().messages().list(userId='me', maxResults=10, labelIds=['INBOX', 'IMPORTANT', 'UNREAD']).execute()
         messages = results.get('messages', [])
 
         email_summaries = []
-        for message in messages[:10]:  # Limit to 10 emails for example
+        for message in messages:
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
             header_data = extract_header_data(msg)
+            body = extract_email_body(msg)
             email_summaries.append({
                 'id': msg['id'],
                 'sender': header_data['sender'],
+                'internalDate': convert_internal_date(msg['internalDate']),
                 'subject': header_data['subject'],
                 'snippet': msg['snippet'],
-                'body': extract_email_body(msg),
+                'body': body,
+                'summary': summarize_with_ollama("Summarize this email very concisely: " + body),
                 'labelIds': msg['labelIds'],
                 'threadId': msg['threadId']
             })
@@ -107,6 +113,15 @@ def extract_email_body(msg):
     return None
 
 
+def summarize_with_ollama(content):
+    result = subprocess.run(
+        ["ollama", "run", "llama3.2", content],
+        capture_output=True, text=True
+    )
+
+    return result.stdout.strip()
+
+
 def clean_email_body(content, is_html=True):
     if is_html:
         soup = BeautifulSoup(content, "html.parser")
@@ -120,3 +135,13 @@ def clean_email_body(content, is_html=True):
     text = text.strip()
 
     return text
+
+
+def convert_internal_date(internal_date_ms):
+    if internal_date_ms:
+        timestamp = int(internal_date_ms) / 1000
+        email_datetime = datetime.datetime.fromtimestamp(timestamp)
+        readable_date = email_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        return readable_date
+
+    return None

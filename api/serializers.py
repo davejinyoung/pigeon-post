@@ -9,8 +9,10 @@ class EmailSummarySerializer(serializers.ModelSerializer):
 class EmailSerializer(serializers.Serializer):
     id = serializers.CharField()
     sender = serializers.CharField()
+    internalDate = serializers.CharField()
     subject = serializers.CharField()
     snippet = serializers.CharField()
     body = serializers.CharField()
+    summary = serializers.CharField()
     labelIds = serializers.ListField()
     threadId = serializers.CharField()

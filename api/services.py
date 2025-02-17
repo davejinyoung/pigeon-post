@@ -3,6 +3,7 @@ import base64
 import re
 import subprocess
 import datetime
+import functools
 from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -24,7 +25,7 @@ def get_gmail_service():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'api/credentials.json', SCOPES)
-            creds = flow.run_local_server(port=8080, access_type='offline')
+            creds = flow.run_local_server(port=8080, access_type='offline') # add prompt='consent' arg for refresh token
 
         # Save the credentials for the next run
         with open('api/token.json', 'w') as token:
@@ -38,30 +39,41 @@ def get_gmail_service():
 def get_unread_emails():
     try:
         service = get_gmail_service()
-        results = service.users().messages().list(userId='me', maxResults=10, labelIds=['INBOX', 'IMPORTANT', 'UNREAD']).execute()
+        results = service.users().messages().list(userId='me', maxResults=3, labelIds=['INBOX', 'IMPORTANT', 'UNREAD']).execute()
         messages = results.get('messages', [])
 
-        email_summaries = []
+        emails = []
         for message in messages:
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
             header_data = extract_header_data(msg)
             body = extract_email_body(msg)
-            email_summaries.append({
+            emails.append({
                 'id': msg['id'],
                 'sender': header_data['sender'],
                 'internalDate': convert_internal_date(msg['internalDate']),
                 'subject': header_data['subject'],
                 'snippet': msg['snippet'],
                 'body': body,
-                'summary': summarize_with_ollama("Summarize this email very concisely: " + body),
                 'labelIds': msg['labelIds'],
                 'threadId': msg['threadId']
             })
 
-        return email_summaries
+        return emails
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
+
+
+def get_unread_emails_summaries():
+    emails = get_unread_emails()
+    summaries = []
+
+    for email in emails:
+        email_content = "Sender: " + email['sender'] + "\n"
+        email_content += "body: " + email['body']
+        summaries.append(summarize_with_ollama("summarize this email concisely: " + email_content))
+
+    return {'summaries': summaries}
 
 
 def extract_header_data(msg):
@@ -113,6 +125,7 @@ def extract_email_body(msg):
     return None
 
 
+@functools.cache
 def summarize_with_ollama(content):
     result = subprocess.run(
         ["ollama", "run", "llama3.2", content],

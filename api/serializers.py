@@ -13,6 +13,8 @@ class EmailSerializer(serializers.Serializer):
     subject = serializers.CharField()
     snippet = serializers.CharField()
     body = serializers.CharField()
-    summary = serializers.CharField()
     labelIds = serializers.ListField()
     threadId = serializers.CharField()
+
+class SummariesSerializer(serializers.Serializer):
+    summaries = serializers.ListField()

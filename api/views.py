@@ -1,8 +1,9 @@
+from django.core.serializers import serialize
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import EmailSummary
-from .services import get_unread_emails
-from .serializers import EmailSummarySerializer, EmailSerializer
+from .services import get_unread_emails, get_unread_emails_summaries
+from .serializers import EmailSummarySerializer, EmailSerializer, SummariesSerializer
 
 class EmailSummaryList(APIView):
     def get(self, request):
@@ -21,4 +22,10 @@ class UnreadEmailsList(APIView):
     def get(self, request):
         emails = get_unread_emails()
         serializer = EmailSerializer(emails, many=True)
+        return Response(serializer.data)
+
+class UnreadEmailsSummary(APIView):
+    def get(self, request):
+        summary = get_unread_emails_summaries()
+        serializer = SummariesSerializer(summary)
         return Response(serializer.data)

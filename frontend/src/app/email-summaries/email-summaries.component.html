@@ -1,0 +1,7 @@
+<div *ngIf="summaries.length === 0">Loading Summaries...</div>
+
+<ul>
+  <li *ngFor="let summary of summaries">
+    <p>{{ summary }}</p>
+  </li>
+</ul>

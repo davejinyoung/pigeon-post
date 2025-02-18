@@ -36,44 +36,53 @@ def get_gmail_service():
     return service
 
 
-def get_unread_emails():
+def get_emails(max_results, label_ids, query=""):
     try:
         service = get_gmail_service()
-        results = service.users().messages().list(userId='me', maxResults=3, labelIds=['INBOX', 'IMPORTANT', 'UNREAD']).execute()
+        results = service.users().messages().list(userId='me', maxResults=max_results, labelIds=label_ids, q=query).execute()
         messages = results.get('messages', [])
+        email_ids = [message['id'] for message in messages]
 
-        emails = []
-        for message in messages:
-            msg = service.users().messages().get(userId='me', id=message['id']).execute()
-            header_data = extract_header_data(msg)
-            body = extract_email_body(msg)
-            emails.append({
-                'id': msg['id'],
-                'sender': header_data['sender'],
-                'internalDate': convert_internal_date(msg['internalDate']),
-                'subject': header_data['subject'],
-                'snippet': msg['snippet'],
-                'body': body,
-                'labelIds': msg['labelIds'],
-                'threadId': msg['threadId']
-            })
-
-        return emails
+        return extract_emails_from_id(service, email_ids)
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
 
 
-def get_unread_emails_summaries():
-    emails = get_unread_emails()
-    summaries = []
+def extract_emails_from_id(service, email_ids):
+    emails = []
+    for email_id in email_ids:
+        msg = service.users().messages().get(userId='me', id=email_id).execute()
+        header_data = extract_header_data(msg)
+        body = extract_email_body(msg)
+        emails.append({
+            'id': msg['id'],
+            'sender': header_data['sender'],
+            'internalDate': convert_internal_date(msg['internalDate']),
+            'subject': header_data['subject'],
+            'snippet': msg['snippet'],
+            'body': body,
+            'threadId': msg['threadId']
+        })
 
-    for email in emails:
-        email_content = "Sender: " + email['sender'] + "\n"
-        email_content += "body: " + email['body']
-        summaries.append(summarize_with_ollama("summarize this email concisely: " + email_content))
+    return emails
 
-    return {'summaries': summaries}
+
+def get_emails_summaries(email_ids):
+    try:
+        service = get_gmail_service()
+        emails = extract_emails_from_id(service, email_ids)
+        summaries = []
+
+        for email in emails:
+            email_content = "Sender: " + email['sender'] + "\n"
+            email_content += "body: " + email['body']
+            summaries.append(summarize_with_ollama("summarize this email concisely: " + email_content))
+
+        return {'summaries': summaries}
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return None
 
 
 def extract_header_data(msg):

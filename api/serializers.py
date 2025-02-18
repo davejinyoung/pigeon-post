@@ -1,11 +1,6 @@
 from rest_framework import serializers
 from .models import EmailSummary
 
-class EmailSummarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EmailSummary
-        fields = '__all__'
-
 class EmailSerializer(serializers.Serializer):
     id = serializers.CharField()
     sender = serializers.CharField()
@@ -13,8 +8,7 @@ class EmailSerializer(serializers.Serializer):
     subject = serializers.CharField()
     snippet = serializers.CharField()
     body = serializers.CharField()
-    labelIds = serializers.ListField()
     threadId = serializers.CharField()
 
-class SummariesSerializer(serializers.Serializer):
+class EmailSummariesSerializer(serializers.Serializer):
     summaries = serializers.ListField()

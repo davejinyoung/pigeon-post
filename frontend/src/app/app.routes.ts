@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { UnreadEmailsComponent } from './unread-emails/unread-emails.component';
+import { EmailsComponent } from './emails/emails.component';
 import { EmailSummariesComponent } from './email-summaries/email-summaries.component';
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent },
-    { path: 'emails', component: UnreadEmailsComponent },
-    { path: 'summaries', component: EmailSummariesComponent }
+    { path: 'emails', component: EmailsComponent, title: 'Emails' },
+    { path: 'summaries', component: EmailSummariesComponent, title: 'Email Summaries' },
+    { path: '', component: HomeComponent, title: 'Home' }
   ];

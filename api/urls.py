@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import EmailSummaryList, UnreadEmailsList, UnreadEmailsSummary
+from .views import EmailsList, EmailSummaryList
 
 urlpatterns = [
-    path('summaries/', EmailSummaryList.as_view(), name='email-summary-list'),
-    path('unread-emails/', UnreadEmailsList.as_view(), name='unread-emails-list'),
-    path('unread-emails-summaries/', UnreadEmailsSummary.as_view(), name='unread-emails-summaries'),
+    path('emails/', EmailsList.as_view(), name='emails-list'),
+    path('emails/summaries/', EmailSummaryList.as_view(), name='email-summaries'),
 ]

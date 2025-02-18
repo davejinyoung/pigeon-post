@@ -1,31 +1,50 @@
-from django.core.serializers import serialize
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from .models import EmailSummary
-from .services import get_unread_emails, get_unread_emails_summaries
-from .serializers import EmailSummarySerializer, EmailSerializer, SummariesSerializer
+from .services import get_emails, get_emails_summaries
+from .serializers import EmailSummariesSerializer, EmailSerializer
+from datetime import datetime, timedelta
 
-class EmailSummaryList(APIView):
+
+class EmailsList(APIView):
+    max_results = 3
+    label_ids = ['INBOX', 'IMPORTANT', 'UNREAD']
+    query = ""
+
     def get(self, request):
-        summaries = EmailSummary.objects.all()
-        serializer = EmailSummarySerializer(summaries, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = EmailSummarySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
-class UnreadEmailsList(APIView):
-    def get(self, request):
-        emails = get_unread_emails()
+        dt = datetime.today() - timedelta(days=7)
+        test_query = f"before:{int(dt.timestamp())}"
+        emails = get_emails(max_results=self.max_results, label_ids=self.label_ids, query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
-class UnreadEmailsSummary(APIView):
+    def post(self, request):
+        data = request.data
+        self.max_results = data["max_results"]
+        self.label_ids = data["label_ids"]
+        self.query = data["query"]
+
+class EmailSummaryList(APIView):
+    email_ids = []
+
     def get(self, request):
-        summary = get_unread_emails_summaries()
-        serializer = SummariesSerializer(summary)
+        print(self.email_ids)
+        summary = get_emails_summaries(self.email_ids)
+        print(summary)
+        serializer = EmailSummariesSerializer(summary)
+        return Response(serializer.data)
+
+    def post(self, request):
+        email_ids = request.data.get("email_ids", [])
+        print(email_ids)
+
+        if not email_ids:
+            return Response({"error": "No email IDs provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.email_ids = email_ids
+
+        summary = get_emails_summaries(self.email_ids)
+        print(summary)
+        serializer = EmailSummariesSerializer(summary)
         return Response(serializer.data)

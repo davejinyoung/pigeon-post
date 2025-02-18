@@ -13,15 +13,18 @@ import { EmailService } from '../services/email.service';
 
 export class EmailSummariesComponent implements OnInit {
   summaries: string[] = [];  // Use the 'string[]' type for summaries
+  emailIds: string[] = [];
 
   constructor(private emailService: EmailService) {}
 
   ngOnInit(): void {
-    this.fetchEmails();
+    this.emailIds = this.emailService.getSelectedEmailIds();
+    this.fetchEmailSummaries();
   }
 
-  fetchEmails(): void {
-    this.emailService.getUnreadEmailsSummaries().subscribe(
+  fetchEmailSummaries(): void {
+    if (this.emailIds.length === 0) return;
+    this.emailService.getEmailSummaries(this.emailIds).subscribe(
       (data: EmailSummariesResponse) => {
         this.summaries = data.summaries;
       },

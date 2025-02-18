@@ -1,0 +1,15 @@
+<div *ngIf="emails.length === 0">Loading emails...</div>
+
+<ul class="flex justify-center m-10" *ngFor="let email of emails">
+  <div>
+    <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
+      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+    <label for='email-{{ email.id }}'>
+      <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
+    </label>
+  </div>
+</ul>
+
+<div class="flex justify-center">
+  <a (click)="sendEmailIds()" class="bg-blue-500 m-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Summarize</a>
+</div>

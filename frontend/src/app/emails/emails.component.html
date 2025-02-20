@@ -23,17 +23,20 @@
   </div>
 </div>
 
+<div class="w-1/2 m-auto">
+  <ul class="space-y-4 m-10">
+    <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md">
+      <div class="flex items-center">
+        <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer">
+        <label class="cursor-pointer ml-3" for='email-{{ email.id }}'>
+          <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
+        </label>
+      </div>
+    </li>
+  </ul>
+</div>
 
-<ul class="flex justify-center m-10" *ngFor="let email of emails">
-  <div>
-    <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
-      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-    <label class="cursor-pointer" for='email-{{ email.id }}'>
-      <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
-    </label>
-  </div>
-</ul>
-
-<div class="flex justify-center">
+<div class="flex justify-center cursor-pointer">
   <a (click)="sendEmailIds()" class="bg-blue-500 m-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Summarize</a>
 </div>

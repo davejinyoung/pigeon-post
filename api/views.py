@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 
 class EmailsList(APIView):
-    max_results = 3
+    max_results = 10
     label_ids = ['INBOX', 'IMPORTANT', 'UNREAD']
     query = ""
 
@@ -20,10 +20,12 @@ class EmailsList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        data = request.data
-        self.max_results = data["max_results"]
-        self.label_ids = data["label_ids"]
-        self.query = data["query"]
+        data = request.data.get("filters")
+        dt = datetime.today() - timedelta(days=data['dateRange'])
+        self.query = f"after:{int(dt.timestamp())}"
+        emails = get_emails(max_results=self.max_results, label_ids=self.label_ids, query=self.query)
+        serializer = EmailSerializer(emails, many=True)
+        return Response(serializer.data)
 
 class EmailSummaryList(APIView):
     email_ids = []

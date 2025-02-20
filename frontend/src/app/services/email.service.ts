@@ -7,13 +7,29 @@ import { Observable, BehaviorSubject } from 'rxjs';
 })
 export class EmailService {
   private apiUrlRoot = 'http://127.0.0.1:8000/api/';  // Replace with your actual API
-  private selectedEmailIdsSubject = new BehaviorSubject<string[]>([]);
+
+  private selectedEmailIdsSubject = new BehaviorSubject<string[]>([]); 
   selectedEmailIds$ = this.selectedEmailIdsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  getEmails(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrlRoot + 'emails/');
+  getEmails(dateRange?: number): Observable<any[]> {
+    if (dateRange && typeof localStorage !== 'undefined') {
+      localStorage.setItem('emailFilters', JSON.stringify(dateRange));
+    }
+
+    if (typeof localStorage === 'undefined') {
+      return this.http.get<any[]>(this.apiUrlRoot + 'emails/');
+    };
+    
+    let emailFilters: emailFilters = {
+      dateRange: JSON.parse(localStorage.getItem('emailFilters') || '0'),
+      labels: [],
+      query: '',
+      maxResults: 10
+    }
+
+    return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters});
   }
 
   postEmailFilters(filters: any): Observable<any> {
@@ -40,6 +56,9 @@ export class EmailService {
   }
 }
 
-interface EmailSummariesResponse {
-  summaries: string[];
+interface emailFilters {
+  dateRange: number;
+  labels: string[];
+  query: string;
+  maxResults: number;
 }

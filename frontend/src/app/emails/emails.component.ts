@@ -15,6 +15,7 @@ import { provideHttpClient } from '@angular/common/http';
 export class EmailsComponent implements OnInit {
   emails: any[] = [];
   selectedEmailIds: { [key: string]: boolean } = {};
+  isDateRangeMenuHidden = true;
 
   constructor(private emailService: EmailService, private router: Router) {}
 
@@ -45,5 +46,31 @@ export class EmailsComponent implements OnInit {
     } catch (error) {
       console.error('Error sending email IDs:', error);
     }
+  }
+
+  toggleDateRangeMenu(): void {
+    this.isDateRangeMenuHidden = !this.isDateRangeMenuHidden;
+  }
+
+  setDateRangeFilter(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const dateRange = Number(target.value);
+    this.emailService.getEmails(dateRange).subscribe(
+      (data) => {
+        this.emails = data;
+      },
+      (error) => {
+        console.error('Error fetching emails:', error);
+      }
+    );
+    console.log('Setting date range filter:', dateRange);
+    // this.emailService.postEmailFilters({ dateRange }).subscribe(
+    //   () => {
+    //     this.fetchEmails();
+    //   },
+    //   (error) => {
+    //     console.error('Error setting date range filter:', error);
+    //   }
+    // );
   }
 }

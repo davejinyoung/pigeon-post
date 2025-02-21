@@ -1,42 +1,83 @@
-<div *ngIf="emails.length === 0">Loading emails...</div>
+<div class="flex items-center justify-center h-150" *ngIf="emails.length === 0 else renderedEmails">
+  <h1 class="text-lg">Loading emails...</h1>
+</div>
 
-<div class="flex justify-center m-10">
-  <div class="relative inline-block text-left">
-    <div>
-      <button (click)="toggleDateRangeMenu()" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="menu-button" aria-expanded="true" aria-haspopup="true">
-        Date Range
-        <svg class="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-          <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-        </svg>
-      </button>
-    </div>
-    <div class="absolute left-0 z-10 mt-2 w-full origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden" [hidden]="isDateRangeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-      <div class="py-1" role="none">
-        <button value="1" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-0">Last 24 Hours</button>
-        <button value="3" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 3 Days</button>
-        <button value="7" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last Week</button>
+<ng-template #renderedEmails>
+  <div class="flex justify-center m-10">
+    <div class="relative inline-block text-left">
+      <div class="grid grid-flow-col auto-cols-auto gap-2">
+
+        <div class="relative inline-block">
+          <button (click)="toggleDateRangeMenu()" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="date-range-menu-button" aria-expanded="true" aria-haspopup="true">
+            Date Range: {{ dateRangeLabel }}
+            <svg class="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="absolute left-0 z-10 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden" [hidden]="isDateRangeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="date-range-menu-button" tabindex="-1">
+            <div class="py-1" role="none">
+              <button value="1" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-0">Last 24 Hours</button>
+              <button value="3" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 3 Days</button>
+              <button value="7" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 7 Days</button>
+              <button value="30" (click)="setDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 30 Days</button>
+            </div>
+            <div class="py-1" role="none">
+              <button class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-6">Custom</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative inline-block">
+          <button (click)="toggleInboxTypeMenu()" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="inbox-type-menu-button" aria-expanded="true" aria-haspopup="true">
+            Inbox Type
+            <svg class="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="absolute left-0 z-10 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden p-2 w-48"
+            [hidden]="isInboxTypeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="inbox-type-menu-button"tabindex="-1">
+            <div class="py-1" role="none">
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['unread']" (change)="setInboxTypeFilter('unread', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Unread
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['read']" (change)="setInboxTypeFilter('read', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Read
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['last7days']" (change)="setInboxTypeFilter('last7days', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Last 7 Days
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button (click)="applyFilters()" type="button" class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="apply-filter-button">
+          Apply Filters
+        </button>
       </div>
-      <div class="py-1" role="none">
-        <button class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-6">Custom</button>
-      </div>
+
     </div>
   </div>
-</div>
-
-<div class="w-1/2 m-auto">
-  <ul class="space-y-4 m-10">
-    <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md">
-      <div class="flex items-center">
-        <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
-          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer">
-        <label class="cursor-pointer ml-3" for='email-{{ email.id }}'>
-          <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
-        </label>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<div class="flex justify-center cursor-pointer">
-  <a (click)="sendEmailIds()" class="bg-blue-500 m-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Summarize</a>
-</div>
+  
+  <div class="my-10 mx-30">
+    <ul class="space-y-4 m-10">
+      <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md hover:bg-gray-50">
+        <div class="grid grid-cols-[min-content_1fr] items-center">
+          <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
+            class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
+          <label class="cursor-pointer mx-5" for='email-{{ email.id }}'>
+            <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="flex justify-center cursor-pointer">
+    <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
+      Summarize
+    </a>
+  </div>
+</ng-template>

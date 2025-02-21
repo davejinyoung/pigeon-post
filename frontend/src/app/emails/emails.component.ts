@@ -15,6 +15,14 @@ export class EmailsComponent implements OnInit {
   emails: any[] = [];
   selectedEmailIds: { [key: string]: boolean } = {};
   isDateRangeMenuHidden = true;
+  isInboxTypeMenuHidden = true;
+  selectedInboxTypes = {
+    unread: false,
+    read: false,
+    last7days: false
+  };
+  emailFilters: emailFilters = new emailFilters();
+  dateRangeLabel: string = 'All Time'
 
   constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef, private renderer: Renderer2) {}
 
@@ -24,8 +32,11 @@ export class EmailsComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
-    if (!this.elRef.nativeElement.querySelector("#menu-button").contains(event.target)) {
+    if (!this.elRef.nativeElement.querySelector("#date-range-menu-button")?.contains(event.target)) {
       this.isDateRangeMenuHidden = true;
+    }
+    if (!this.elRef.nativeElement.querySelector("#inbox-type-menu-button")?.contains(event.target)) {
+      this.isInboxTypeMenuHidden = true;
     }
   }
 
@@ -58,10 +69,25 @@ export class EmailsComponent implements OnInit {
     this.isDateRangeMenuHidden = !this.isDateRangeMenuHidden;
   }
 
+  toggleInboxTypeMenu(): void {
+    console.log("inbox menu toggle")
+    this.isInboxTypeMenuHidden = !this.isInboxTypeMenuHidden;
+  }
+
   setDateRangeFilter(event: Event): void {
     const target = event.target as HTMLInputElement;
-    const dateRange = Number(target.value);
-    this.emailService.getEmails(dateRange).subscribe(
+    this.emailFilters.dateRange = Number(target.value);
+    this.dateRangeLabel = dateRangeLabelsDist[this.emailFilters.dateRange];
+  }
+
+  setInboxTypeFilter(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.emailFilters.labels = target.value.split(',');
+    this.dateRangeLabel = dateRangeLabelsDist[this.emailFilters.dateRange];
+  }
+
+  applyFilters(): void {
+    this.emailService.getEmails(this.emailFilters.dateRange).subscribe(
       (data) => {
         this.emails = data;
       },
@@ -69,14 +95,28 @@ export class EmailsComponent implements OnInit {
         console.error('Error fetching emails:', error);
       }
     );
-    this.isDateRangeMenuHidden = true;
-    // this.emailService.postEmailFilters({ dateRange }).subscribe(
-    //   () => {
-    //     this.fetchEmails();
-    //   },
-    //   (error) => {
-    //     console.error('Error setting date range filter:', error);
-    //   }
-    // );
+    this.emails = []
   }
 }
+
+class emailFilters {
+  dateRange: number;
+  labels: string[];
+  query: string;
+  maxResults: number;
+
+  constructor() {
+    this.dateRange = 0;
+    this.labels = [];
+    this.query = '';
+    this.maxResults = 10;
+  }
+}
+
+const dateRangeLabelsDist: { [key: number]: string } = {
+  0: 'All Time',
+  1: 'Last 24 Hours',
+  3: 'Last 3 Days',
+  7: 'Last 7 Days',
+  30: 'Last 30 Days'
+};

@@ -17,14 +17,22 @@ export class EmailsComponent implements OnInit {
   isDateRangeMenuHidden = true;
   isInboxTypeMenuHidden = true;
   selectedInboxTypes = {
+    inbox: true,
+    spam: false,
+    trash: false,
     unread: false,
-    read: false,
-    last7days: false
+    starred: false,
+    important: false,
+    category_personal: false,
+    category_social: false,
+    category_promotions: false,
+    category_updates: false,
+    category_forums: false
   };
   emailFilters: emailFilters = new emailFilters();
   dateRangeLabel: string = 'All Time'
 
-  constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef, private renderer: Renderer2) {}
+  constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef) {}
 
   ngOnInit(): void {
     this.fetchEmails();
@@ -35,7 +43,7 @@ export class EmailsComponent implements OnInit {
     if (!this.elRef.nativeElement.querySelector("#date-range-menu-button")?.contains(event.target)) {
       this.isDateRangeMenuHidden = true;
     }
-    if (!this.elRef.nativeElement.querySelector("#inbox-type-menu-button")?.contains(event.target)) {
+    if (!this.elRef.nativeElement.querySelector("#inbox-type-menu-button")?.contains(event.target) && !this.elRef.nativeElement.querySelector("#inbox-type-menu")?.contains(event.target)) {
       this.isInboxTypeMenuHidden = true;
     }
   }
@@ -70,24 +78,31 @@ export class EmailsComponent implements OnInit {
   }
 
   toggleInboxTypeMenu(): void {
-    console.log("inbox menu toggle")
     this.isInboxTypeMenuHidden = !this.isInboxTypeMenuHidden;
   }
 
   setDateRangeFilter(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.emailFilters.dateRange = Number(target.value);
-    this.dateRangeLabel = dateRangeLabelsDist[this.emailFilters.dateRange];
+    this.dateRangeLabel = dateRangeLabelsDict[this.emailFilters.dateRange];
   }
 
-  setInboxTypeFilter(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.emailFilters.labels = target.value.split(',');
-    this.dateRangeLabel = dateRangeLabelsDist[this.emailFilters.dateRange];
+  setAllInboxTypeFilters(event: Event): void {
+    const allFiltersCheckbox = event.target as HTMLInputElement;
+    if (allFiltersCheckbox.checked) {
+      (Object.keys(this.selectedInboxTypes) as Array<keyof typeof this.selectedInboxTypes>).forEach((key) => {
+        this.selectedInboxTypes[key] = true;
+      });
+    }
+    else {
+      (Object.keys(this.selectedInboxTypes) as Array<keyof typeof this.selectedInboxTypes>).forEach((key) => {
+        this.selectedInboxTypes[key] = false;
+      });
+    }
   }
 
   applyFilters(): void {
-    this.emailService.getEmails(this.emailFilters.dateRange).subscribe(
+    this.emailService.getEmails(this.emailFilters.dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;
       },
@@ -113,7 +128,7 @@ class emailFilters {
   }
 }
 
-const dateRangeLabelsDist: { [key: number]: string } = {
+const dateRangeLabelsDict: { [key: number]: string } = {
   0: 'All Time',
   1: 'Last 24 Hours',
   3: 'Last 3 Days',

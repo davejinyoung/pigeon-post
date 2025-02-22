@@ -23,6 +23,7 @@ class EmailsList(APIView):
         data = request.data.get("filters")
         dt = datetime.today() - timedelta(days=data['dateRange'])
         self.query = f"after:{int(dt.timestamp())}"
+        self.label_ids = data['labels']
         emails = get_emails(max_results=self.max_results, label_ids=self.label_ids, query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)

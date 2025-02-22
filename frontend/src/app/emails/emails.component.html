@@ -34,20 +34,56 @@
               <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
             </svg>
           </button>
-          <div class="absolute left-0 z-10 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden p-2 w-48"
+          <div id="inbox-type-menu" class="absolute left-0 z-10 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden p-2 w-36"
             [hidden]="isInboxTypeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="inbox-type-menu-button"tabindex="-1">
             <div class="py-1" role="none">
               <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                <input type="checkbox" [(ngModel)]="selectedInboxTypes['unread']" (change)="setInboxTypeFilter('unread', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                <input type="checkbox" (change)="setAllInboxTypeFilters($event)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                All
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['inbox']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" checked>
+                Inbox
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['spam']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Spam
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['trash']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Trash
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['unread']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
                 Unread
               </label>
               <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                <input type="checkbox" [(ngModel)]="selectedInboxTypes['read']" (change)="setInboxTypeFilter('read', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
-                Read
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['starred']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Starred
               </label>
               <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                <input type="checkbox" [(ngModel)]="selectedInboxTypes['last7days']" (change)="setInboxTypeFilter('last7days', $event.target.checked)" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
-                Last 7 Days
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['important']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Important
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['category_personal']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Personal
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['category_social']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Social
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['category_promotions']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Promotions
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['category_updates']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Updates
+              </label>
+              <label class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="selectedInboxTypes['category_forums']" class="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                Forums
               </label>
             </div>
           </div>
@@ -75,7 +111,7 @@
     </ul>
   </div>
   
-  <div class="flex justify-center cursor-pointer">
+  <div class="flex justify-center cursor-pointer mb-10">
     <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
       Summarize
     </a>

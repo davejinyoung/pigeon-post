@@ -13,7 +13,16 @@ export class EmailService {
 
   constructor(private http: HttpClient) {}
 
-  getEmails(dateRange?: number): Observable<any[]> {
+  getEmails(dateRange?: number, inboxTypes?: {[key: string]: boolean}): Observable<any[]> {
+    let labels: string[] = [];
+    if (inboxTypes) {
+      Object.keys(inboxTypes).forEach((key) => {
+        if (inboxTypes[key] === true) {
+          labels.push(key.toLocaleUpperCase());
+        }
+      });
+    }
+
     if (dateRange && typeof localStorage !== 'undefined') {
       localStorage.setItem('emailFilters', JSON.stringify(dateRange));
     }
@@ -24,7 +33,7 @@ export class EmailService {
     
     let emailFilters: emailFilters = {
       dateRange: JSON.parse(localStorage.getItem('emailFilters') || '0'),
-      labels: [],
+      labels: labels,
       query: '',
       maxResults: 10
     }

@@ -31,6 +31,7 @@ export class EmailsComponent implements OnInit {
   };
   emailFilters: emailFilters = new emailFilters();
   dateRangeLabel: string = 'All Time'
+  inboxTypeLabel: string[] = ["Inbox"]
 
   constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef) {}
 
@@ -92,12 +93,32 @@ export class EmailsComponent implements OnInit {
     if (allFiltersCheckbox.checked) {
       (Object.keys(this.selectedInboxTypes) as Array<keyof typeof this.selectedInboxTypes>).forEach((key) => {
         this.selectedInboxTypes[key] = true;
+        this.inboxTypeLabel = [];
+        this.inboxTypeLabel.push("All");
       });
     }
     else {
       (Object.keys(this.selectedInboxTypes) as Array<keyof typeof this.selectedInboxTypes>).forEach((key) => {
         this.selectedInboxTypes[key] = false;
+        this.inboxTypeLabel = [];
+        this.inboxTypeLabel.push("None");
       });
+    }
+  }
+
+  setSelectInboxTypeFilters(): void {
+    this.inboxTypeLabel = [];
+    (Object.keys(this.selectedInboxTypes) as Array<keyof typeof this.selectedInboxTypes>).forEach((key) => {
+      if (this.selectedInboxTypes[key]) {
+        if (key.substring(0, 8) == "category") {
+          this.inboxTypeLabel.push(key.substring(9).charAt(0).toUpperCase() + key.substring(9).slice(1));
+        } else {
+          this.inboxTypeLabel.push(key.charAt(0).toUpperCase() + key.slice(1));
+        }
+      }
+    });
+    if (this.inboxTypeLabel.length == 0) {
+      this.inboxTypeLabel.push("None");
     }
   }
 

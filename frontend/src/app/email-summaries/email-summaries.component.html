@@ -1,7 +1,15 @@
-<div *ngIf="summaries.length === 0">Loading Summaries...</div>
+<div div class="flex items-center justify-center h-150" *ngIf="summaries.length === 0 else loadedSummaries">
+  Loading summaries...
+</div>
 
-<ul>
-  <li class="flex justify-center m-10" *ngFor="let summary of summaries">
-    <p>{{ summary }}</p>
-  </li>
-</ul>
+<ng-template #loadedSummaries>
+  <div class="flex items-center justify-center my-10 mx-30" *ngIf="hasSummaryError">
+    There was an error loading your email summaries...
+  </div>
+
+  <ul>
+    <li class="flex justify-center my-10 mx-30" *ngFor="let summary of summaries">
+      <p>{{ summary }}</p>
+    </li>
+  </ul>
+</ng-template>

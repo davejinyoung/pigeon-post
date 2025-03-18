@@ -31,23 +31,19 @@ class EmailsList(APIView):
 class EmailSummaryList(APIView):
     email_ids = []
 
-    def get(self, request):
-        print(self.email_ids)
-        summary = get_emails_summaries(self.email_ids)
-        print(summary)
-        serializer = EmailSummariesSerializer(summary)
+    def summarize(self):
+        serializer = EmailSummariesSerializer(get_emails_summaries(self.email_ids))
         return Response(serializer.data)
+
+    def get(self, request):
+        return self.summarize()
 
     def post(self, request):
         email_ids = request.data.get("email_ids", [])
-        print(email_ids)
 
         if not email_ids:
             return Response({"error": "No email IDs provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         self.email_ids = email_ids
 
-        summary = get_emails_summaries(self.email_ids)
-        print(summary)
-        serializer = EmailSummariesSerializer(summary)
-        return Response(serializer.data)
+        return self.summarize()

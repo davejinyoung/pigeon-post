@@ -14,6 +14,7 @@ import { EmailService } from '../services/email.service';
 export class EmailSummariesComponent implements OnInit {
   summaries: string[] = [];  // Use the 'string[]' type for summaries
   emailIds: string[] = [];
+  hasSummaryError = false;
 
   constructor(private emailService: EmailService) {}
 
@@ -27,9 +28,11 @@ export class EmailSummariesComponent implements OnInit {
     this.emailService.getEmailSummaries(this.emailIds).subscribe(
       (data: EmailSummariesResponse) => {
         this.summaries = data.summaries;
+        this.hasSummaryError = false;
       },
       (error) => {
         console.error('Error fetching summaries:', error);
+        this.hasSummaryError = true;
       }
     );
   }

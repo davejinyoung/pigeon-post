@@ -16,6 +16,7 @@ export class EmailsComponent implements OnInit {
   selectedEmailIds: { [key: string]: boolean } = {};
   isDateRangeMenuHidden = true;
   isInboxTypeMenuHidden = true;
+  isWaiting = false;
   selectedInboxTypes = {
     inbox: true,
     spam: false,
@@ -30,7 +31,7 @@ export class EmailsComponent implements OnInit {
     category_forums: false
   };
   emailFilters: emailFilters = new emailFilters();
-  dateRangeLabel: string = 'All Time'
+  dateRangeLabel: string = dateRangeLabelsDict[1];
   inboxTypeLabel: string[] = ["Inbox"]
 
   constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef) {}
@@ -49,13 +50,16 @@ export class EmailsComponent implements OnInit {
     }
   }
 
-  fetchEmails(): void {
-    this.emailService.getEmails().subscribe(
+  fetchEmails(dateRange?: number): void {
+    this.isWaiting = true;
+    this.emailService.getEmails(dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;
+        this.isWaiting = false;
       },
       (error) => {
         console.error('Error fetching emails:', error);
+        this.isWaiting = false;
       }
     );
   }
@@ -123,15 +127,8 @@ export class EmailsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    this.emailService.getEmails(this.emailFilters.dateRange, this.selectedInboxTypes).subscribe(
-      (data) => {
-        this.emails = data;
-      },
-      (error) => {
-        console.error('Error fetching emails:', error);
-      }
-    );
-    this.emails = []
+    this.emails = [];
+    this.fetchEmails(this.emailFilters.dateRange);
   }
 }
 
@@ -150,7 +147,6 @@ class emailFilters {
 }
 
 const dateRangeLabelsDict: { [key: number]: string } = {
-  0: 'All Time',
   1: 'Last 24 Hours',
   3: 'Last 3 Days',
   7: 'Last 7 Days',

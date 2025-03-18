@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center h-150" *ngIf="emails.length === 0 else renderedEmails">
+<div class="flex items-center justify-center h-150" *ngIf="isWaiting else renderedEmails">
   <h1 class="text-lg">Loading emails...</h1>
 </div>
 
@@ -97,23 +97,30 @@
     </div>
   </div>
   
-  <div class="my-10 mx-30">
-    <ul class="space-y-4 m-10">
-      <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md hover:bg-gray-50">
-        <div class="grid grid-cols-[min-content_1fr] items-center">
-          <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
-            class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
-          <label class="cursor-pointer mx-5" for='email-{{ email.id }}'>
-            <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
-          </label>
-        </div>
-      </li>
-    </ul>
+  <div *ngIf="emails.length != 0 else noEmails">
+    <div class="my-10 mx-30">
+      <ul class="space-y-4 m-10">
+        <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md hover:bg-gray-50">
+          <div class="grid grid-cols-[min-content_1fr] items-center">
+            <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
+              class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
+            <label class="cursor-pointer mx-5" for='email-{{ email.id }}'>
+              <strong>{{ email.sender }}</strong> - {{ email.subject }} ({{ email.internalDate }})
+            </label>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="flex justify-center cursor-pointer mb-10">
+      <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
+        Summarize
+      </a>
+    </div>
   </div>
+  <ng-template #noEmails>
+    <div class="flex justify-center m-10">
+      <h1 class="text-lg">No emails found...</h1>
+    </div>
+  </ng-template>
   
-  <div class="flex justify-center cursor-pointer mb-10">
-    <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
-      Summarize
-    </a>
-  </div>
 </ng-template>

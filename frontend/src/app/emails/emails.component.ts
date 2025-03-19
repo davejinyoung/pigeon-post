@@ -78,6 +78,18 @@ export class EmailsComponent implements OnInit {
     }
   }
 
+  selectAllEmails(): void {
+    this.emails.forEach((email) => {
+      this.selectedEmailIds[email.id] = true;
+    });
+  }
+
+  deselectAllEmails(): void {
+    this.emails.forEach((email) => {
+      this.selectedEmailIds[email.id] = false;
+    });
+  }
+
   toggleDateRangeMenu(): void {
     this.isDateRangeMenuHidden = !this.isDateRangeMenuHidden;
   }

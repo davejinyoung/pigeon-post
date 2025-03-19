@@ -17,6 +17,9 @@ export class EmailsComponent implements OnInit {
   isDateRangeMenuHidden = true;
   isInboxTypeMenuHidden = true;
   isWaiting = false;
+  isCustomDateModalOpen = false;
+  customStartDate: string = "";
+  customEndDate: string = "";
   selectedInboxTypes = {
     inbox: true,
     spam: false,
@@ -31,7 +34,7 @@ export class EmailsComponent implements OnInit {
     category_forums: false
   };
   emailFilters: emailFilters = new emailFilters();
-  dateRangeLabel: string = dateRangeLabelsDict[1];
+  dateRangeLabel: string = "Last 24 Hours";
   inboxTypeLabel: string[] = ["Inbox"]
 
   constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef) {}
@@ -101,7 +104,32 @@ export class EmailsComponent implements OnInit {
   setDateRangeFilter(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.emailFilters.dateRange = Number(target.value);
-    this.dateRangeLabel = dateRangeLabelsDict[this.emailFilters.dateRange];
+    this.updateDateRangeLabel();
+  }
+
+  updateDateRangeLabel(): void {
+    this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
+      "Last " + this.emailFilters.dateRange + " Days" : 
+      "Last 24 Hours";
+  }
+
+  openCustomDateModal() {
+    this.isCustomDateModalOpen = true;
+  }
+
+  closeCustomDateModal() {
+    this.isCustomDateModalOpen = false;
+  }
+
+  applyCustomDateRange() {
+    // Logic to apply the custom date range filter
+    const startDate = new Date(this.customStartDate);
+    const endDate = new Date(this.customEndDate);
+
+    this.emailFilters.dateRange = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+    console.log(this.emailFilters.dateRange);
+    this.updateDateRangeLabel();
+    this.closeCustomDateModal();
   }
 
   setAllInboxTypeFilters(event: Event): void {
@@ -157,10 +185,3 @@ class emailFilters {
     this.maxResults = 10;
   }
 }
-
-const dateRangeLabelsDict: { [key: number]: string } = {
-  1: 'Last 24 Hours',
-  3: 'Last 3 Days',
-  7: 'Last 7 Days',
-  30: 'Last 30 Days'
-};

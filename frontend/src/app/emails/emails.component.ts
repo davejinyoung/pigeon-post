@@ -18,8 +18,11 @@ export class EmailsComponent implements OnInit {
   isInboxTypeMenuHidden = true;
   isWaiting = false;
   isCustomDateModalOpen = false;
+  todayDate: string = this.formatDate(new Date());
   customStartDate: string = "";
-  customEndDate: string = this.formatDate(new Date());
+  customEndDate: string = this.todayDate;
+  customStartDateError: string | null = null;
+  customEndDateError: string | null = null;
   selectedInboxTypes = {
     inbox: true,
     spam: false,
@@ -108,14 +111,15 @@ export class EmailsComponent implements OnInit {
     this.isInboxTypeMenuHidden = !this.isInboxTypeMenuHidden;
   }
 
-  setDateRangeFilter(event: Event): void {
+  setAutoDateRangeFilter(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.emailFilters.dateRange = Number(target.value);
+    this.customEndDate = this.formatDate(new Date());
     this.updateDateRangeLabel();
   }
 
   updateDateRangeLabel(): void {
-    if (this.customEndDate == this.formatDate(new Date())) {
+    if (this.customEndDate == this.todayDate) {
       this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
         "Last " + this.emailFilters.dateRange + " Days" : 
         "Last 24 Hours";
@@ -130,9 +134,21 @@ export class EmailsComponent implements OnInit {
 
   closeCustomDateModal() {
     this.isCustomDateModalOpen = false;
+    this.customStartDateError = null;
+    this.customEndDateError = null;
   }
 
-  applyCustomDateRange() {
+  setCustomDateRangeFilter() {
+    if (this.customStartDate == "" || this.customEndDate == "") {
+      this.customStartDateError = "Please enter a start date";
+    }
+    if (this.customEndDate == "") {
+      console.log("Please enter an end date");
+      this.customEndDateError = "Please enter an end date";
+    }
+    if (this.customStartDate == "" || this.customEndDate == "") {
+      return;
+    }
     const startDate = new Date(this.customStartDate);
     const endDate = new Date(this.customEndDate);
 
@@ -157,6 +173,14 @@ export class EmailsComponent implements OnInit {
         this.inboxTypeLabel = [];
         this.inboxTypeLabel.push("None");
       });
+    }
+  }
+
+  handleEndDateChange(value: string) {
+    if (value) {
+      this.todayDate = this.customEndDate;
+    } else {
+      this.todayDate = this.formatDate(new Date());
     }
   }
 

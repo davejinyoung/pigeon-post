@@ -19,7 +19,7 @@ export class EmailsComponent implements OnInit {
   isWaiting = false;
   isCustomDateModalOpen = false;
   customStartDate: string = "";
-  customEndDate: string = "";
+  customEndDate: string = this.formatDate(new Date());
   selectedInboxTypes = {
     inbox: true,
     spam: false,
@@ -41,6 +41,13 @@ export class EmailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchEmails();
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
   }
 
   @HostListener('document:click', ['$event'])
@@ -108,9 +115,13 @@ export class EmailsComponent implements OnInit {
   }
 
   updateDateRangeLabel(): void {
-    this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
-      "Last " + this.emailFilters.dateRange + " Days" : 
-      "Last 24 Hours";
+    if (this.customEndDate == this.formatDate(new Date())) {
+      this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
+        "Last " + this.emailFilters.dateRange + " Days" : 
+        "Last 24 Hours";
+    } else {
+      this.dateRangeLabel = this.customStartDate + " - " + this.customEndDate;
+    }
   }
 
   openCustomDateModal() {
@@ -122,12 +133,11 @@ export class EmailsComponent implements OnInit {
   }
 
   applyCustomDateRange() {
-    // Logic to apply the custom date range filter
     const startDate = new Date(this.customStartDate);
     const endDate = new Date(this.customEndDate);
 
     this.emailFilters.dateRange = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-    console.log(this.emailFilters.dateRange);
+
     this.updateDateRangeLabel();
     this.closeCustomDateModal();
   }

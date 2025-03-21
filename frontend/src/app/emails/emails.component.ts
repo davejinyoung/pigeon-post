@@ -119,7 +119,7 @@ export class EmailsComponent implements OnInit {
   }
 
   updateDateRangeLabel(): void {
-    if (this.customEndDate == this.todayDate) {
+    if (this.customEndDate == this.formatDate(new Date())) {
       this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
         "Last " + this.emailFilters.dateRange + " Days" : 
         "Last 24 Hours";

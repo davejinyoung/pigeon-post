@@ -126,7 +126,7 @@
         <button (click)="deselectAllEmails()" type="button" class="inline-flex w-auto justify-left gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="date-range-menu-button" aria-expanded="true" aria-haspopup="true">
           Deselect All
         </button>
-        <li *ngFor="let email of emails" class="border p-4 rounded-lg shadow-md hover:bg-gray-50">
+        <li *ngFor="let email of emailsPage[currentPage-1]" class="border p-4 rounded-lg shadow-md hover:bg-gray-50">
           <div class="grid grid-cols-[min-content_1fr] items-center">
             <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
               class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
@@ -138,9 +138,18 @@
       </ul>
     </div>
     <div class="flex justify-center cursor-pointer mb-10">
-      <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
-        Summarize
-      </a>
+      <div class="flex flex-col items-center">
+        <div class="flex inline-flex">
+          <a (click)="navigatePage(currentPage - 1)" class="mb-8 mx-4 cursor-pointer">Previous</a>
+          <div *ngFor="let page of emailsPage; let i = index" class="mb-8 mx-4 cursor-pointer">
+            <a (click)="navigatePage(i+1)">{{ i + 1 }}</a>
+          </div>
+          <a (click)="navigatePage(currentPage + 1)" class="mb-8 mx-4 cursor-pointer">Next</a>
+        </div>
+        <a (click)="sendEmailIds()" class="w-48 h-12 flex items-center justify-center bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
+          Summarize
+        </a>
+      </div>
     </div>
   </div>
   <ng-template #noEmails>

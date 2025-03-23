@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class EmailsComponent implements OnInit {
   emails: any[] = [];
+  emailsPage: any[] = [];
   selectedEmailIds: { [key: string]: boolean } = {};
   isDateRangeMenuHidden = true;
   isInboxTypeMenuHidden = true;
@@ -23,6 +24,9 @@ export class EmailsComponent implements OnInit {
   customEndDate: string = this.todayDate;
   customStartDateError: string | null = null;
   customEndDateError: string | null = null;
+  numberOfPages: number = 1;
+  currentPage: number = 1;
+  emailsPerPage: number = 10;
   selectedInboxTypes = {
     inbox: true,
     spam: false,
@@ -68,6 +72,11 @@ export class EmailsComponent implements OnInit {
     this.emailService.getEmails(dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;
+        this.numberOfPages = Math.ceil(this.emails.length / this.emailsPerPage);
+        // for every page, slice the emails array to get the emails for that page
+        for (let i = 0; i < this.numberOfPages; i++) {
+          this.emailsPage.push(this.emails.slice(i * this.emailsPerPage, (i + 1) * this.emailsPerPage));
+        }
         this.isWaiting = false;
       },
       (error) => {
@@ -199,6 +208,15 @@ export class EmailsComponent implements OnInit {
       this.inboxTypeLabel.push("None");
     }
   }
+
+  navigatePage(page: number): void {
+    console.log(page);
+    if (page >= 1 && page <= this.numberOfPages) {
+      this.currentPage = page;;
+    }
+  }
+
+
 
   applyFilters(): void {
     this.emails = [];

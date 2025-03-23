@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 
 class EmailsList(APIView):
-    max_results = 10
+    max_results = 30
     label_ids = ['INBOX', 'IMPORTANT', 'UNREAD']
     query = ""
 

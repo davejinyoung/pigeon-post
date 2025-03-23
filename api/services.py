@@ -96,6 +96,8 @@ def extract_header_data(msg):
                     header_data['subject'] = header['value']
                 case 'From':
                     header_data['sender'] = header['value']
+                case 'FROM':
+                    header_data['sender'] = header['value']
                 case _:
                     continue
 

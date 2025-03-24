@@ -118,7 +118,7 @@
   </div>
   
   <div *ngIf="emails.length != 0 else noEmails">
-    <div class="my-10 mx-30">
+    <div class="my-10 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
       <ul class="space-y-4 m-10">
         <button (click)="selectAllEmails()" type="button" class="inline-flex w-auto justify-left gap-x-1.5 mr-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="date-range-menu-button" aria-expanded="true" aria-haspopup="true">
           Select All

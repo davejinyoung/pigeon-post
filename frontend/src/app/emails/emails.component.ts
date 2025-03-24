@@ -213,6 +213,7 @@ export class EmailsComponent implements OnInit {
     console.log(page);
     if (page >= 1 && page <= this.numberOfPages) {
       this.currentPage = page;;
+      window.scrollTo(0, 0);
     }
   }
 

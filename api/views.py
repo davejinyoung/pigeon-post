@@ -1,3 +1,4 @@
+import functools
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,17 +15,18 @@ class EmailsList(APIView):
 
     def get(self, request):
         dt = datetime.today() - timedelta(days=7)
-        test_query = f"before:{int(dt.timestamp())}"
-        emails = get_emails(max_results=self.max_results, label_ids=self.label_ids, query=self.query)
+        emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         data = request.data.get("filters")
         dt = datetime.today() - timedelta(days=data['dateRange'])
+        dt = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
         self.query = f"after:{int(dt.timestamp())}"
         self.label_ids = data['labels']
-        emails = get_emails(max_results=self.max_results, label_ids=self.label_ids, query=self.query)
+        self.max_results = data['maxResults']
+        emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 

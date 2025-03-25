@@ -69,6 +69,7 @@ export class EmailsComponent implements OnInit {
 
   fetchEmails(dateRange?: number): void {
     this.isWaiting = true;
+    this.emailsPage = [];
     this.emailService.getEmails(dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;

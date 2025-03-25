@@ -35,7 +35,7 @@ export class EmailService {
       dateRange: JSON.parse(localStorage.getItem('emailFilters') || '0'),
       labels: labels,
       query: '',
-      maxResults: 10
+      maxResults: 30
     }
 
     return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters});

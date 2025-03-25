@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from .models import EmailSummary
 
 class EmailSerializer(serializers.Serializer):
     id = serializers.CharField()

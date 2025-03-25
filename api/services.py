@@ -25,7 +25,7 @@ def get_gmail_service():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'api/credentials.json', SCOPES)
-            creds = flow.run_local_server(port=8080, access_type='offline') # add prompt='consent' arg for refresh token
+            creds = flow.run_local_server(port=8080, access_type='offline') # add prompt='consent' arg for refresh token and delete existing token.json file
 
         # Save the credentials for the next run
         with open('api/token.json', 'w') as token:
@@ -36,7 +36,9 @@ def get_gmail_service():
     return service
 
 
+@functools.cache
 def get_emails(max_results, label_ids, query=""):
+    label_ids = list(label_ids)
     try:
         service = get_gmail_service()
         results = service.users().messages().list(userId='me', maxResults=max_results, labelIds=label_ids, q=query).execute()

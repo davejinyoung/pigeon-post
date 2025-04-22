@@ -4,6 +4,7 @@ import re
 import subprocess
 import datetime
 import functools
+import re
 from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -75,16 +76,40 @@ def get_emails_summaries(email_ids):
         service = get_gmail_service()
         emails = extract_emails_from_id(service, email_ids)
         summaries = []
+        email_content = ''
+        prompt_text = (
+            "You are an AI assistant that summarizes emails. For each email, create a concise summary using the following format:\n\n"
+            "Here is the summary format:\n"
+            "Sender: <Sender's name or email>\n"
+            "Subject: <If known, otherwise skip>\n"
+            "Summary: <One or two sentences explaining the main purpose of the email>\n"
+            "Urgency: <High, Medium, Low - based on tone and content>\n"
+            "Action Required: <Yes or No>\n"
+            "Deadline (if any): <State the deadline if mentioned, otherwise say 'None'>\n\n"
+            "Be consistent and clear. If any field is missing, provide your best guess or write 'Unknown'.\n\n"
+            "In your response, only write within the summary format. Do not write anything else.'\n\n"
+            "Here are the emails to summarize:\n"
+        )
 
         for email in emails:
-            email_content = "Sender: " + email['sender'] + "\n"
+            email_content += "Sender: " + email['sender'] + "\n"
             email_content += "body: " + email['body']
-            summaries.append(summarize_with_ollama("summarize this email concisely: " + email_content))
 
-        return {'summaries': summaries}
+        summaries.append(summarize_with_ollama(prompt_text + email_content))
+        print(split_email_summaries(summaries[0]))
+        return {'summaries': split_email_summaries(summaries[0])}
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
+
+
+def split_email_summaries(summary_blob):
+    if summary_blob.startswith("Here are the summaries"):
+        summary_blob = summary_blob.split("Sender:", 1)[-1]
+
+    split_summaries = re.split(r'\n(?:\d+\.\s)?(?=Sender:)', summary_blob)
+
+    return [s.strip() for s in split_summaries if s.strip()]
 
 
 def extract_header_data(msg):

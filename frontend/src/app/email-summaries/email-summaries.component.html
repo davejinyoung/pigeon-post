@@ -7,9 +7,11 @@
     There was an error loading your email summaries...
   </div>
 
-  <ul>
-    <li class="flex justify-center my-10 mx-30" *ngFor="let summary of summaries">
-      <p>{{ summary }}</p>
-    </li>
-  </ul>
+  <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
+    <ul class="space-y-4 m-10">
+      <li class="border p-4 rounded-lg shadow-md hover:bg-gray-50" *ngFor="let summary of summaries">
+        <p>{{ summary }}</p>
+      </li>
+    </ul>
+  </div>
 </ng-template>

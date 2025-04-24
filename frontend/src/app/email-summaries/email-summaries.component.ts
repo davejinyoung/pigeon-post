@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { EmailService } from '../services/email.service';
 
 
@@ -12,20 +11,17 @@ import { EmailService } from '../services/email.service';
 })
 
 export class EmailSummariesComponent implements OnInit {
-  summaries: string[] = [];  // Use the 'string[]' type for summaries
-  emailIds: string[] = [];
+  summaries: string[] = [];
   hasSummaryError = false;
 
   constructor(private emailService: EmailService) {}
 
   ngOnInit(): void {
-    this.emailIds = this.emailService.getSelectedEmailIds();
     this.fetchEmailSummaries();
   }
 
   fetchEmailSummaries(): void {
-    if (this.emailIds.length === 0) return;
-    this.emailService.getEmailSummaries(this.emailIds).subscribe(
+    this.emailService.getEmailSummaries().subscribe(
       (data: EmailSummariesResponse) => {
         this.summaries = data.summaries;
         this.hasSummaryError = false;

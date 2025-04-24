@@ -70,6 +70,7 @@ export class EmailsComponent implements OnInit {
   fetchEmails(dateRange?: number): void {
     this.isWaiting = true;
     this.emailsPage = [];
+    this.currentPage = 1;
     this.emailService.getEmails(dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;
@@ -85,6 +86,9 @@ export class EmailsComponent implements OnInit {
         this.isWaiting = false;
       }
     );
+    this.emailService.getSelectedEmailIds().forEach((emailId) => {
+      this.selectedEmailIds[emailId] = true;
+    });
   }
 
   async sendEmailIds() {
@@ -213,12 +217,10 @@ export class EmailsComponent implements OnInit {
   navigatePage(page: number): void {
     console.log(page);
     if (page >= 1 && page <= this.numberOfPages) {
-      this.currentPage = page;;
+      this.currentPage = page;
       window.scrollTo(0, 0);
     }
   }
-
-
 
   applyFilters(): void {
     this.emails = [];

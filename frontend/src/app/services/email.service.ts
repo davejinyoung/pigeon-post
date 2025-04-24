@@ -45,7 +45,8 @@ export class EmailService {
     return this.http.post<any>(this.apiUrlRoot + 'emails/', filters);
   }
 
-  getEmailSummaries(ids: any): Observable<any> {
+  getEmailSummaries(): Observable<any> {
+    const ids = this.getSelectedEmailIds();
     return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"email_ids": ids});
   }
 

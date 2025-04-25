@@ -98,9 +98,7 @@ export class EmailsComponent implements OnInit {
 
   async sendEmailIds() {
     try {
-      const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
-      this.emailService.setSelectedEmailIds(selectedIds);
-      if (selectedIds.length === 0) {
+      if (this.updateSelectedEmailIds().length === 0) {
         console.error('No email IDs selected');
         return;
       }
@@ -114,8 +112,7 @@ export class EmailsComponent implements OnInit {
     this.emails.forEach((email) => {
       this.selectedEmailIds[email.id] = true;
     });
-    const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
-    this.emailService.setSelectedEmailIds(selectedIds);
+    this.updateSelectedEmailIds();
     
   }
 
@@ -123,8 +120,14 @@ export class EmailsComponent implements OnInit {
     this.emails.forEach((email) => {
       this.selectedEmailIds[email.id] = false;
     });
+    this.updateSelectedEmailIds();
+  }
+
+  updateSelectedEmailIds(): string[] {
     const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
     this.emailService.setSelectedEmailIds(selectedIds);
+    
+    return selectedIds;
   }
 
   toggleDateRangeMenu(): void {

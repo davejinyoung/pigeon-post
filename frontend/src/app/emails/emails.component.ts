@@ -74,6 +74,14 @@ export class EmailsComponent implements OnInit {
     this.emailService.getEmails(dateRange, this.selectedInboxTypes).subscribe(
       (data) => {
         this.emails = data;
+
+        // Check if there are any emails
+        this.emails.forEach((email) => {
+          if (this.emailService.getSelectedEmailIds().includes(email.id)) {
+            this.selectedEmailIds[email.id] = true;
+          }
+        });
+
         this.numberOfPages = Math.ceil(this.emails.length / this.emailsPerPage);
         // for every page, slice the emails array to get the emails for that page
         for (let i = 0; i < this.numberOfPages; i++) {
@@ -86,9 +94,6 @@ export class EmailsComponent implements OnInit {
         this.isWaiting = false;
       }
     );
-    this.emailService.getSelectedEmailIds().forEach((emailId) => {
-      this.selectedEmailIds[emailId] = true;
-    });
   }
 
   async sendEmailIds() {
@@ -109,12 +114,17 @@ export class EmailsComponent implements OnInit {
     this.emails.forEach((email) => {
       this.selectedEmailIds[email.id] = true;
     });
+    const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
+    this.emailService.setSelectedEmailIds(selectedIds);
+    
   }
 
   deselectAllEmails(): void {
     this.emails.forEach((email) => {
       this.selectedEmailIds[email.id] = false;
     });
+    const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
+    this.emailService.setSelectedEmailIds(selectedIds);
   }
 
   toggleDateRangeMenu(): void {

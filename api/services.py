@@ -1,6 +1,5 @@
 import os
 import base64
-import re
 import subprocess
 import datetime
 import functools
@@ -11,7 +10,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
-
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -102,15 +100,6 @@ def remove_hyperlinks(text):
     return re.sub(r'https?://\S+|www\.\S+', '', text)
 
 
-def split_email_summaries(summary_blob):
-    if summary_blob.startswith("Here are the summaries"):
-        summary_blob = summary_blob.split("Sender:", 1)[-1]
-
-    split_summaries = re.split(r'\n(?:\d+\.\s)?(?=Sender:)', summary_blob)
-
-    return [s.strip() for s in split_summaries if s.strip()]
-
-
 def extract_header_data(msg):
     header_data = {}
     payload = msg.get("payload", {})
@@ -133,29 +122,34 @@ def extract_header_data(msg):
 def extract_email_body(msg):
     payload = msg.get("payload", {})
 
-    # Check if the email is multipart
-    if "parts" in payload:
-        for part in payload["parts"]:
+    def process_parts(parts):
+        for part in parts:
             mime_type = part.get("mimeType", "")
 
-            # If it's a multipart/alternative, we need to check for plain text or HTML
-            if mime_type == "multipart/alternative":
-                # Loop through the alternative parts and pick the first text/plain or text/html
-                for sub_part in part.get("parts", []):
-                    sub_mime_type = sub_part.get("mimeType", "")
-                    if sub_mime_type == "text/plain" or sub_mime_type == "text/html":
-                        content = base64.urlsafe_b64decode(sub_part["body"]["data"]).decode("utf-8")
-                        return clean_email_body(content, is_html=(sub_mime_type == "text/html"))
+            # Handle multipart types recursively
+            if mime_type.startswith("multipart/"):
+                sub_parts = part.get("parts", [])
+                result = process_parts(sub_parts)
+                if result:
+                    return result
 
-            # If it's a simple part and mime type is plain text or html
             if mime_type == "text/plain" or mime_type == "text/html":
                 content = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
                 return clean_email_body(content, is_html=(mime_type == "text/html"))
 
-    # If it's not multipart, check the main body (in case it's not multipart but still has data)
+            if "attachmentId" in part.get("body", {}):
+                attachment_id = part["body"]["attachmentId"]
+                filename = part.get("filename", "unknown")
+                print(f"Attachment found: {filename} (ID: {attachment_id})")
+
+        return None
+
+    if "parts" in payload:
+        return process_parts(payload["parts"])
+
     if "body" in payload and "data" in payload["body"]:
         body_data = payload["body"].get("data", "")
-        if body_data:  # Make sure there is data to decode
+        if body_data:
             raw_content = base64.urlsafe_b64decode(body_data).decode("utf-8")
             return clean_email_body(raw_content)
 

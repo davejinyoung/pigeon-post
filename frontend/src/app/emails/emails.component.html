@@ -130,8 +130,15 @@
           <div class="grid grid-cols-[min-content_1fr] items-center">
             <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
               class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
-            <label class="cursor-pointer mx-5" for='email-{{ email.id }}'>
-              <strong>FROM: {{ email.sender }}</strong> - ({{ email.internalDate }}) <br> {{ email.subject }} <br> <span class="text-gray-500">{{ email.snippet }}</span>
+            <label class="cursor-pointer mx-5 flex flex-col" for='email-{{ email.id }}'>
+              <div class="flex justify-between items-center">
+                <span class="text-left font-bold">FROM: {{ email.sender }}</span>
+                <span class="text-right font-bold">{{ this.convertTimestampToReadableDate(email.internalDate) }}</span>
+              </div>
+              <div>
+                {{ email.subject }} <br>
+                <span class="text-gray-500">{{ email.snippet }}</span>
+              </div>
             </label>
           </div>
         </li>

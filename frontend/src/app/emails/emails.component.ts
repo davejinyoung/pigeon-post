@@ -57,6 +57,22 @@ export class EmailsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  convertTimestampToReadableDate(datetime: string): string {
+    const isoDatetime = datetime.replace(' ', 'T') + 'Z'; // Convert to ISO format and append 'Z' for UTC
+    const date = new Date(isoDatetime);
+  
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'America/Los_Angeles'
+    }).format(date);
+  }
+
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.elRef.nativeElement.querySelector("#date-range-menu-button")?.contains(event.target)) {
@@ -170,7 +186,6 @@ export class EmailsComponent implements OnInit {
       this.customStartDateError = "Please enter a start date";
     }
     if (this.customEndDate == "") {
-      console.log("Please enter an end date");
       this.customEndDateError = "Please enter an end date";
     }
     if (this.customStartDate == "" || this.customEndDate == "") {

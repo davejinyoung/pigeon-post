@@ -92,9 +92,10 @@ export class EmailsComponent implements OnInit {
         this.emails = data;
 
         // Check if there are any emails
-        this.emails.forEach((email) => {
-          if (this.emailService.getSelectedEmailIds().includes(email.id)) {
-            this.selectedEmailIds[email.id] = true;
+        this.emailService.getSelectedEmails().forEach((email) => {
+          const selectedEmail = this.emails.find(e => e.id === email.id);
+          if (selectedEmail) {
+            this.selectedEmailIds[selectedEmail.id] = true;
           }
         });
 
@@ -141,7 +142,8 @@ export class EmailsComponent implements OnInit {
 
   updateSelectedEmailIds(): string[] {
     const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
-    this.emailService.setSelectedEmailIds(selectedIds);
+    const selectedEmails = this.emails.filter(email => selectedIds.includes(email.id));
+    this.emailService.setSelectedEmails(selectedEmails);
     
     return selectedIds;
   }

@@ -69,10 +69,8 @@ def extract_emails_from_id(service, email_ids):
     return emails
 
 
-def get_emails_summaries(email_ids):
+def get_emails_summaries(emails):
     try:
-        service = get_gmail_service()
-        emails = extract_emails_from_id(service, email_ids)
         summaries = []
         prompt_text = (
             "You are an AI assistant that summarizes emails. For this email, create a concise summary using the following format:\n\n"

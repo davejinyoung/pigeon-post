@@ -8,8 +8,8 @@ import { Observable, BehaviorSubject } from 'rxjs';
 export class EmailService {
   private apiUrlRoot = 'http://127.0.0.1:8000/api/';  // Replace with your actual API
 
-  private selectedEmailIdsSubject = new BehaviorSubject<string[]>([]); 
-  selectedEmailIds$ = this.selectedEmailIdsSubject.asObservable();
+  private selectedEmailsSubject = new BehaviorSubject<string[]>([]); 
+  selectedEmails$ = this.selectedEmailsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -46,23 +46,23 @@ export class EmailService {
   }
 
   getEmailSummaries(): Observable<any> {
-    const ids = this.getSelectedEmailIds();
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"email_ids": ids});
+    const emails = this.getSelectedEmails();
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails});
   }
 
-  setSelectedEmailIds(ids: string[]) {
-    this.selectedEmailIdsSubject.next(ids);
-    
+  setSelectedEmails(emails: any[]) {
+    this.selectedEmailsSubject.next(emails);
+
     if (typeof localStorage !== 'undefined') { 
-      localStorage.setItem('selectedEmailIds', JSON.stringify(ids));  
+      localStorage.setItem('selectedEmails', JSON.stringify(emails));  
     }
   }
   
-  getSelectedEmailIds(): string[] {
+  getSelectedEmails(): any[] {
     if (typeof localStorage === 'undefined') return [];
     
-    const storedIds = localStorage.getItem('selectedEmailIds');
-    return storedIds ? JSON.parse(storedIds) : [];
+    const storedEmails = localStorage.getItem('selectedEmails');
+    return storedEmails ? JSON.parse(storedEmails) : [];
   }
 }
 

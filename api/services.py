@@ -81,6 +81,7 @@ def get_emails_summaries(emails):
         for email in emails:
             clean_body = remove_hyperlinks(email['body'])
             email_content = f"Sender: {email['sender']}\n"
+            email_content = f"Subject: {email['subject']}\n"
             email_content += f"Email content: '{clean_body}'\n\n"
             email['summary'] = summarize_with_ollama(prompt_text + email_content)
 

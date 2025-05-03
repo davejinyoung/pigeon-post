@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
@@ -14,11 +14,23 @@ import { DateService } from '../services/date.service';
 export class EmailSummariesComponent implements OnInit {
   emails_with_summaries: any[] = [];
   hasSummaryError = false;
+  isEmailOptionsDropdownHidden = true;
 
-  constructor(private emailService: EmailService, public dateService: DateService) {}
+  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef) {}
 
   ngOnInit(): void {
     this.fetchEmailSummaries();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent): void {
+    this.emails_with_summaries.forEach(email => {
+      const dropdown = this.elRef.nativeElement.querySelector(`#email-options-dropdown-${email.id}`);
+      const ellipsis = this.elRef.nativeElement.querySelector(`#ellipsis-${email.id}`);
+      if (dropdown && !dropdown.contains(event.target) && !ellipsis.contains(event.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
   }
 
   fetchEmailSummaries(): void {
@@ -32,6 +44,15 @@ export class EmailSummariesComponent implements OnInit {
         this.hasSummaryError = true;
       }
     );
+  }
+
+  toggleEmailOptionsDropdown(emailId: string): void {
+    const dropdown = document.getElementById(`email-options-dropdown-${emailId}`);
+    if (dropdown?.classList.contains('hidden')) {
+      dropdown.classList.remove('hidden');
+    } else {
+      dropdown?.classList.add('hidden');
+    }
   }
 }
 

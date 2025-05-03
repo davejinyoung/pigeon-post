@@ -9,20 +9,41 @@
 
   <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
     <ul class="space-y-4 m-10">
-      <li class="border p-4 rounded-lg shadow-md hover:bg-gray-50" *ngFor="let email of emails_with_summaries">
-        <div class="grid grid-cols-[min-content_1fr] items-center">
-          <input id='email-{{ email.id }}' type='checkbox'
-            class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
-          <label class="cursor-pointer mx-5 flex flex-col" for='email-{{ email.id }}'>
+      <li class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
+        <div class="flex border p-6 rounded-lg shadow-md hover:bg-gray-50 items-center">
+          <label class="cursor-pointer flex flex-col" for='email-{{ email.id }}'>
             <div class="flex justify-between items-center">
               <span class="text-left font-bold">FROM: {{ email.sender }}</span>
               <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
             </div>
             <div>
-              {{ email.subject }} <br><br>
-              <span>{{ email.summary }}</span>
+              {{ email.subject }} <br>
+              <span class="text-gray-500">
+                {{ email.snippet }}
+              </span>
+              <br>
+              <div class="pt-4">
+                <strong>Summary:</strong><br>
+                {{ email.summary }}
+              </div>
             </div>
           </label>
+        </div>
+        <div class="relative">
+          <div id="ellipsis-{{ email.id }}" (click)="toggleEmailOptionsDropdown(email.id)" class="text-xl cursor-pointer">
+            ...
+          </div>
+          <div
+            id="email-options-dropdown-{{ email.id }}"
+            class="hidden absolute left-0 z-10 origin-top-left rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-none"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="user-menu-button"
+            tabindex="-1"
+          >
+            <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
+            <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
+          </div>
         </div>
       </li>
     </ul>

@@ -10,4 +10,4 @@ class EmailSerializer(serializers.Serializer):
     threadId = serializers.CharField()
 
 class EmailSummariesSerializer(serializers.Serializer):
-    summaries = serializers.ListField()
+    emails_with_summaries = serializers.ListField()

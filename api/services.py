@@ -71,14 +71,10 @@ def extract_emails_from_id(service, email_ids):
 
 def get_emails_summaries(emails):
     try:
-        summaries = []
         prompt_text = (
             "You are an AI assistant that summarizes emails. For this email, create a concise summary using the following format:\n\n"
-            "Here is the summary format:\n"
-            "Sender: <Sender's name or email>\n"
-            "Summary: <One or two sentences explaining the main purpose of the email>\n"
-            "Be consistent and clear. If any field is missing, provide your best guess or write 'Unknown'.\n\n"
-            "In your response, only write within the summary format. Do not write anything else.'\n\n"
+            "<An explanation of the main purpose of the email - long enough to capture all information concisely.>\n"
+            "Do not provide any preambles like ""Here is the summary"". Just output only the summary and nothing else.\n"
             "Here is the email to summarize:\n\n\n"
         )
 
@@ -86,9 +82,9 @@ def get_emails_summaries(emails):
             clean_body = remove_hyperlinks(email['body'])
             email_content = f"Sender: {email['sender']}\n"
             email_content += f"Email content: '{clean_body}'\n\n"
-            summaries.append(summarize_with_ollama(prompt_text + email_content))
+            email['summary'] = summarize_with_ollama(prompt_text + email_content)
 
-        return {'summaries': summaries}
+        return {'emails_with_summaries': emails}
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None

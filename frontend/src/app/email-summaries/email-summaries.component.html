@@ -1,4 +1,4 @@
-<div div class="flex items-center justify-center h-150" *ngIf="summaries.length === 0 else loadedSummaries">
+<div div class="flex items-center justify-center h-150" *ngIf="emails_with_summaries.length === 0 else loadedSummaries">
   Loading summaries...
 </div>
 
@@ -9,8 +9,21 @@
 
   <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
     <ul class="space-y-4 m-10">
-      <li class="border p-4 rounded-lg shadow-md hover:bg-gray-50" *ngFor="let summary of summaries">
-        <p>{{ summary }}</p>
+      <li class="border p-4 rounded-lg shadow-md hover:bg-gray-50" *ngFor="let email of emails_with_summaries">
+        <div class="grid grid-cols-[min-content_1fr] items-center">
+          <input id='email-{{ email.id }}' type='checkbox'
+            class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
+          <label class="cursor-pointer mx-5 flex flex-col" for='email-{{ email.id }}'>
+            <div class="flex justify-between items-center">
+              <span class="text-left font-bold">FROM: {{ email.sender }}</span>
+              <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
+            </div>
+            <div>
+              {{ email.subject }} <br><br>
+              <span>{{ email.summary }}</span>
+            </div>
+          </label>
+        </div>
       </li>
     </ul>
   </div>

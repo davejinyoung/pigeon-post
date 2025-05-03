@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { EmailService } from '../services/email.service';
+import { DateService } from '../services/date.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -19,7 +20,7 @@ export class EmailsComponent implements OnInit {
   isInboxTypeMenuHidden = true;
   isWaiting = false;
   isCustomDateModalOpen = false;
-  todayDate: string = this.formatDate(new Date());
+  todayDate: string = '';
   customStartDate: string = "";
   customEndDate: string = this.todayDate;
   customStartDateError: string | null = null;
@@ -44,34 +45,20 @@ export class EmailsComponent implements OnInit {
   dateRangeLabel: string = "Last 24 Hours";
   inboxTypeLabel: string[] = ["Inbox"]
 
-  constructor(private emailService: EmailService, private router: Router, private elRef: ElementRef) {}
+  constructor(private emailService: EmailService, public dateService: DateService, private router: Router, private elRef: ElementRef) {
+    this.todayDate = this.dateService.formatDate(new Date());
+    this.customEndDate = this.todayDate;
+    this.customStartDate = this.todayDate;
+    this.emailFilters.dateRange = 1;
+    this.customEndDate = this.todayDate;
+    this.customStartDate = this.todayDate;
+  }
 
   ngOnInit(): void {
+    this.todayDate = this.dateService.formatDate(new Date());
     this.fetchEmails();
   }
 
-  formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
-
-  convertTimestampToReadableDate(datetime: string): string {
-    const isoDatetime = datetime.replace(' ', 'T') + 'Z'; // Convert to ISO format and append 'Z' for UTC
-    const date = new Date(isoDatetime);
-  
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long', 
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: 'America/Los_Angeles'
-    }).format(date);
-  }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -159,12 +146,12 @@ export class EmailsComponent implements OnInit {
   setAutoDateRangeFilter(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.emailFilters.dateRange = Number(target.value);
-    this.customEndDate = this.formatDate(new Date());
+    this.customEndDate = this.dateService.formatDate(new Date());
     this.updateDateRangeLabel();
   }
 
   updateDateRangeLabel(): void {
-    if (this.customEndDate == this.formatDate(new Date())) {
+    if (this.customEndDate == this.dateService.formatDate(new Date())) {
       this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
         "Last " + this.emailFilters.dateRange + " Days" : 
         "Last 24 Hours";
@@ -224,7 +211,7 @@ export class EmailsComponent implements OnInit {
     if (value) {
       this.todayDate = this.customEndDate;
     } else {
-      this.todayDate = this.formatDate(new Date());
+      this.todayDate = this.dateService.formatDate(new Date());
     }
   }
 

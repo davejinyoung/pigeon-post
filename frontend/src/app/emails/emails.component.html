@@ -133,7 +133,7 @@
             <label class="cursor-pointer mx-5 flex flex-col" for='email-{{ email.id }}'>
               <div class="flex justify-between items-center">
                 <span class="text-left font-bold">FROM: {{ email.sender }}</span>
-                <span class="text-right font-bold">{{ this.convertTimestampToReadableDate(email.internalDate) }}</span>
+                <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
               </div>
               <div>
                 {{ email.subject }} <br>

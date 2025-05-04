@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
@@ -16,7 +16,7 @@ export class EmailSummariesComponent implements OnInit {
   hasSummaryError = false;
   isEmailOptionsDropdownHidden = true;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef) {}
+  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchEmailSummaries();
@@ -53,6 +53,22 @@ export class EmailSummariesComponent implements OnInit {
     } else {
       dropdown?.classList.add('hidden');
     }
+  }
+
+  saveEmailSummary(emailId: string): void {
+    console.log(`Saving summary for email ID: ${emailId}`);
+    // Implement the logic to save the email summary here
+  }
+
+  regenerateEmailSummary(emailId: string): void {
+    console.log(`Regenerating summary for email ID: ${emailId}`);
+    // Implement the logic to regenerate the email summary here
+  }
+
+  removeEmailSummary(emailId: string): void {
+    document.getElementById(`email-${emailId}`)?.remove();
+    this.emails_with_summaries = this.emails_with_summaries.filter(email => email.id !== emailId);
+    this.emailService.setSelectedEmails(this.emails_with_summaries);
   }
 }
 

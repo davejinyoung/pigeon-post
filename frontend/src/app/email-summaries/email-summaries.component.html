@@ -9,7 +9,7 @@
 
   <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
     <ul class="space-y-4 m-10">
-      <li class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
+      <li id="email-{{ email.id }}" class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
         <div class="flex border p-6 rounded-lg shadow-md hover:bg-gray-50 items-center">
           <label class="cursor-pointer flex flex-col" for='email-{{ email.id }}'>
             <div class="flex justify-between items-center">
@@ -41,8 +41,9 @@
             aria-labelledby="user-menu-button"
             tabindex="-1"
           >
-            <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
-            <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
+            <a (click)="saveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
+            <a (click)="regenerateEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
+            <a (click)="removeEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Remove</a>
           </div>
         </div>
       </li>

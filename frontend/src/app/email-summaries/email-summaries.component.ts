@@ -15,6 +15,7 @@ export class EmailSummariesComponent implements OnInit {
   emails_with_summaries: any[] = [];
   hasSummaryError = false;
   isEmailOptionsDropdownHidden = true;
+  isWaiting = false;
 
   constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private renderer: Renderer2) {}
 
@@ -34,14 +35,17 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   fetchEmailSummaries(): void {
+    this.isWaiting = true;
     this.emailService.getEmailSummaries().subscribe(
       (data: EmailSummariesResponse) => {
-        this.emails_with_summaries = data.emails_with_summaries;
+        this.emails_with_summaries = data.emails_with_summaries ? data.emails_with_summaries : [];
         this.hasSummaryError = false;
+        this.isWaiting = false;
       },
       (error) => {
         console.error('Error fetching summaries:', error);
         this.hasSummaryError = true;
+        this.isWaiting = false;
       }
     );
   }

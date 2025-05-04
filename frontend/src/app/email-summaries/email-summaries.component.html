@@ -1,27 +1,26 @@
-<div div class="flex items-center justify-center h-150" *ngIf="emails_with_summaries.length === 0 else loadedSummaries">
+<div div class="flex items-center justify-center h-150" *ngIf="isWaiting else loadedSummaries">
   Loading summaries...
 </div>
 
 <ng-template #loadedSummaries>
-  <div class="flex items-center justify-center my-10 mx-30" *ngIf="hasSummaryError">
+  <div class="flex items-center justify-center h-150" *ngIf="hasSummaryError">
     There was an error loading your email summaries...
   </div>
 
-  <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
+  <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full" *ngIf="emails_with_summaries.length !== 0 else noSummaries">
     <ul class="space-y-4 m-10">
       <li id="email-{{ email.id }}" class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
         <div class="flex border p-6 rounded-lg shadow-md hover:bg-gray-50 items-center">
-          <label class="cursor-pointer flex flex-col" for='email-{{ email.id }}'>
+          <label class="flex flex-col" for='email-{{ email.id }}'>
             <div class="flex justify-between items-center">
               <span class="text-left font-bold">FROM: {{ email.sender }}</span>
               <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
             </div>
             <div>
               {{ email.subject }} <br>
-              <span class="text-gray-500">
-                {{ email.snippet }}
+              <span class="text-gray-500" *ngIf="email.snippet">
+                {{ email.snippet }}<br>
               </span>
-              <br>
               <div class="pt-4">
                 <strong>Summary:</strong><br>
                 {{ email.summary }}
@@ -49,4 +48,9 @@
       </li>
     </ul>
   </div>
+  <ng-template #noSummaries>
+    <div class="flex items-center justify-center h-150">
+      <h1 class="text-lg">No summaries available...</h1>
+    </div>
+  </ng-template>
 </ng-template>

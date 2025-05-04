@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +47,9 @@ export class EmailService {
 
   getEmailSummaries(): Observable<any> {
     const emails = this.getSelectedEmails();
+    if (emails.length === 0) {
+      return of([]);
+    }
     return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails});
   }
 

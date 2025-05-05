@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
 
@@ -60,8 +61,34 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   saveEmailSummary(emailId: string): void {
-    console.log(`Saving summary for email ID: ${emailId}`);
-    // Implement the logic to save the email summary here
+    const email = this.emails_with_summaries.find(e => e.id === emailId);
+  
+    if (!email) {
+      console.error(`Email with ID ${emailId} not found.`);
+      return;
+    }
+  
+    const payload = {
+      summary: {
+        id: email.id,
+        sender: email.sender,
+        subject: email.subject,
+        snippet: email.snippet,
+        body: email.body,
+        summary: email.summary,
+        internalDate: email.internalDate,
+        threadId: email.threadId,
+      }
+    };
+  
+    this.emailService.saveEmailSummary(payload).subscribe(
+      (response) => {
+        console.log('Email summary saved successfully:', response);
+      },
+      (error) => {
+        console.error('Error saving email summary:', error);
+      }
+    );
   }
 
   regenerateEmailSummary(emailId: string): void {

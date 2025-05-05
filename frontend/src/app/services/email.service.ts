@@ -53,6 +53,10 @@ export class EmailService {
     return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails});
   }
 
+  saveEmailSummary(emailSummary: any): Observable<any> {
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary});
+  }
+
   setSelectedEmails(emails: any[]) {
     this.selectedEmailsSubject.next(emails);
 

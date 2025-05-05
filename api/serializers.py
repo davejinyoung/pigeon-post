@@ -11,3 +11,13 @@ class EmailSerializer(serializers.Serializer):
 
 class EmailSummariesSerializer(serializers.Serializer):
     emails_with_summaries = serializers.ListField()
+
+class EmailSummarySaveSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    sender = serializers.CharField()
+    internalDate = serializers.CharField()
+    subject = serializers.CharField()
+    snippet = serializers.CharField()
+    body = serializers.CharField()
+    summary = serializers.CharField()
+    threadId = serializers.CharField()

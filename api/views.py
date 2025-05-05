@@ -1,10 +1,14 @@
 import functools
+import json
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EmailSummary
 from .services import get_emails, get_emails_summaries
-from .serializers import EmailSummariesSerializer, EmailSerializer
+from .serializers import EmailSummariesSerializer, EmailSerializer, EmailSummarySaveSerializer
 from datetime import datetime, timedelta
 
 
@@ -49,3 +53,27 @@ class EmailSummaryList(APIView):
         self.emails = emails
 
         return self.summarize()
+
+class EmailSummarySave(APIView):
+
+    def post(self, request):
+        summary = request.data.get("summary", [])
+        serializer = EmailSummarySaveSerializer(summary.get("summary"))
+        EmailSummary(
+            id=serializer.data["id"],
+            sender=serializer.data["sender"],
+            subject=serializer.data["subject"],
+            snippet=serializer.data["snippet"],
+            summary=serializer.data["summary"],
+            body=serializer.data["body"],
+            internal_date=serializer.data["internalDate"],
+            thread_id=serializer.data["threadId"],
+        ).save()
+        
+        return JsonResponse(
+        {
+            "message": "Summary saved successfully",
+            "email_id": serializer.data["id"]
+        },
+        status=200,
+    )

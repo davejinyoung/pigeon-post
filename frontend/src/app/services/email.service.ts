@@ -57,6 +57,11 @@ export class EmailService {
     return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary});
   }
 
+  getSavedEmailSummaries(): Observable<any> {
+    console.log('Fetching saved email summaries');
+    return this.http.get<any>(this.apiUrlRoot + 'emails/summaries/saved/');
+  }
+
   setSelectedEmails(emails: any[]) {
     this.selectedEmailsSubject.next(emails);
 

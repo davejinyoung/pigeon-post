@@ -59,11 +59,11 @@ def extract_emails_from_id(service, email_ids):
         emails.append({
             'id': msg['id'],
             'sender': header_data['sender'],
-            'internalDate': convert_internal_date(msg['internalDate']),
+            'internal_date': convert_internal_date(msg['internalDate']),
             'subject': header_data['subject'],
             'snippet': msg['snippet'],
             'body': body,
-            'threadId': msg['threadId']
+            'thread_id': msg['threadId']
         })
 
     return emails

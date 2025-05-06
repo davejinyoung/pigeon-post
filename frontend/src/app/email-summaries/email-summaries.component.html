@@ -14,7 +14,7 @@
           <label class="flex flex-col" for='email-{{ email.id }}'>
             <div class="flex justify-between items-center">
               <span class="text-left font-bold">FROM: {{ email.sender }}</span>
-              <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
+              <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internal_date) }}</span>
             </div>
             <div>
               {{ email.subject }} <br>

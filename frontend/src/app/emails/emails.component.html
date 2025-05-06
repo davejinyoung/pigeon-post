@@ -116,7 +116,7 @@
       </div>
     </div>
   </div>
-  
+
   <div *ngIf="emails.length != 0 else noEmails">
     <div class="my-10 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
       <ul class="space-y-4 m-10">
@@ -128,12 +128,12 @@
         </button>
         <li *ngFor="let email of emailsPage[currentPage-1]" class="border p-6 rounded-lg shadow-md hover:bg-gray-50">
           <div class="grid grid-cols-[min-content_1fr] items-center">
-            <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]" 
+            <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]"
               class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">
             <label class="cursor-pointer ml-6 flex flex-col" for='email-{{ email.id }}'>
               <div class="flex justify-between items-center">
                 <span class="text-left font-bold">FROM: {{ email.sender }}</span>
-                <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internalDate) }}</span>
+                <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internal_date) }}</span>
               </div>
               <div>
                 {{ email.subject }} <br>
@@ -167,5 +167,5 @@
       <h1 class="text-lg">No emails found...</h1>
     </div>
   </ng-template>
-  
+
 </ng-template>

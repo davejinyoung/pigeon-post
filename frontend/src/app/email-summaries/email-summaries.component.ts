@@ -1,8 +1,8 @@
 import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class EmailSummariesComponent implements OnInit {
   isEmailOptionsDropdownHidden = true;
   isWaiting = false;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private renderer: Renderer2) {}
+  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchEmailSummaries();
@@ -37,18 +37,35 @@ export class EmailSummariesComponent implements OnInit {
 
   fetchEmailSummaries(): void {
     this.isWaiting = true;
-    this.emailService.getEmailSummaries().subscribe(
-      (data: EmailSummariesResponse) => {
-        this.emails_with_summaries = data.emails_with_summaries ? data.emails_with_summaries : [];
-        this.hasSummaryError = false;
-        this.isWaiting = false;
-      },
-      (error) => {
-        console.error('Error fetching summaries:', error);
-        this.hasSummaryError = true;
-        this.isWaiting = false;
-      }
-    );
+    if (this.router.url === '/summaries/saved') {
+      this.emailService.getSavedEmailSummaries().subscribe(
+        (response) => {
+          this.emails_with_summaries = response.summaries;
+          this.hasSummaryError = false;
+          this.isWaiting = false;
+        },
+        (error) => {
+          console.error('Error fetching saved email summaries:', error);
+          this.hasSummaryError = true;
+          this.isWaiting = false;
+        }
+      );
+      return;
+    } else if (this.router.url === '/summaries') {
+      this.emailService.getEmailSummaries().subscribe(
+        (data: EmailSummariesResponse) => {
+          this.emails_with_summaries = data.emails_with_summaries ? data.emails_with_summaries : [];
+          this.hasSummaryError = false;
+          this.isWaiting = false;
+        },
+        (error) => {
+          console.error('Error fetching summaries:', error);
+          this.hasSummaryError = true;
+          this.isWaiting = false;
+        }
+      );
+      return;
+    }
   }
 
   toggleEmailOptionsDropdown(emailId: string): void {
@@ -62,12 +79,12 @@ export class EmailSummariesComponent implements OnInit {
 
   saveEmailSummary(emailId: string): void {
     const email = this.emails_with_summaries.find(e => e.id === emailId);
-  
+
     if (!email) {
       console.error(`Email with ID ${emailId} not found.`);
       return;
     }
-  
+
     const payload = {
       summary: {
         id: email.id,
@@ -76,11 +93,11 @@ export class EmailSummariesComponent implements OnInit {
         snippet: email.snippet,
         body: email.body,
         summary: email.summary,
-        internalDate: email.internalDate,
-        threadId: email.threadId,
+        internal_date: email.internal_date,
+        thread_id: email.thread_id,
       }
     };
-  
+
     this.emailService.saveEmailSummary(payload).subscribe(
       (response) => {
         console.log('Email summary saved successfully:', response);
@@ -93,7 +110,6 @@ export class EmailSummariesComponent implements OnInit {
 
   regenerateEmailSummary(emailId: string): void {
     console.log(`Regenerating summary for email ID: ${emailId}`);
-    // Implement the logic to regenerate the email summary here
   }
 
   removeEmailSummary(emailId: string): void {

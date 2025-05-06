@@ -6,5 +6,6 @@ import { EmailSummariesComponent } from './email-summaries/email-summaries.compo
 export const routes: Routes = [
     { path: 'emails', component: EmailsComponent, title: 'Emails' },
     { path: 'summaries', component: EmailSummariesComponent, title: 'Email Summaries' },
+    { path: 'summaries/saved', component: EmailSummariesComponent, title: 'Saved Email Summaries' },
     { path: '', component: HomeComponent, title: 'Home' }
   ];

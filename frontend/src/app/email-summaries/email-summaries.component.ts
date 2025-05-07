@@ -17,6 +17,7 @@ export class EmailSummariesComponent implements OnInit {
   hasSummaryError = false;
   isEmailOptionsDropdownHidden = true;
   isWaiting = false;
+  isSavedPage = false;
 
   constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router) {}
 
@@ -38,9 +39,10 @@ export class EmailSummariesComponent implements OnInit {
   fetchEmailSummaries(): void {
     this.isWaiting = true;
     if (this.router.url === '/summaries/saved') {
+      this.isSavedPage = true;
       this.emailService.getSavedEmailSummaries().subscribe(
-        (response) => {
-          this.emails_with_summaries = response.summaries;
+        (data) => {
+          this.emails_with_summaries = data.summaries;
           this.hasSummaryError = false;
           this.isWaiting = false;
         },
@@ -52,6 +54,7 @@ export class EmailSummariesComponent implements OnInit {
       );
       return;
     } else if (this.router.url === '/summaries') {
+      this.isSavedPage = false;
       this.emailService.getEmailSummaries().subscribe(
         (data: EmailSummariesResponse) => {
           this.emails_with_summaries = data.emails_with_summaries ? data.emails_with_summaries : [];
@@ -104,6 +107,37 @@ export class EmailSummariesComponent implements OnInit {
       },
       (error) => {
         console.error('Error saving email summary:', error);
+      }
+    );
+  }
+
+  unsaveEmailSummary(emailId: string): void {
+    const email = this.emails_with_summaries.find(e => e.id === emailId);
+
+    if (!email) {
+      console.error(`Email with ID ${emailId} not found.`);
+      return;
+    }
+
+    const payload = {
+      summary: {
+        id: email.id,
+        sender: email.sender,
+        subject: email.subject,
+        snippet: email.snippet,
+        body: email.body,
+        summary: email.summary,
+        internal_date: email.internal_date,
+        thread_id: email.thread_id,
+      }
+    };
+
+    this.emailService.unsaveEmailSummary(payload).subscribe(
+      (response) => {
+        console.log('Email summary unsaved successfully:', response);
+      },
+      (error) => {
+        console.error('Error unsaving email summary:', error);
       }
     );
   }

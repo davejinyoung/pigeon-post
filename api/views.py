@@ -65,8 +65,9 @@ class EmailSummarySave(APIView):
 
     def post(self, request):
         summary = request.data.get("summary", [])
+        save = request.data.get("save", True)
         serializer = EmailSummarySaveSerializer(summary.get("summary"))
-        EmailSummary(
+        email_serialized = EmailSummary(
             id=serializer.data["id"],
             sender=serializer.data["sender"],
             subject=serializer.data["subject"],
@@ -75,7 +76,11 @@ class EmailSummarySave(APIView):
             body=serializer.data["body"],
             internal_date=serializer.data["internal_date"],
             thread_id=serializer.data["thread_id"],
-        ).save()
+        )
+        if save:
+            email_serialized.save()
+        else:
+            email_serialized.delete()
         
         return JsonResponse(
             {

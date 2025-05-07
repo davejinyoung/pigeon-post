@@ -43,7 +43,8 @@
             aria-labelledby="user-menu-button"
             tabindex="-1"
           >
-            <a (click)="saveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
+            <a *ngIf="!isSavedPage else unsave" (click)="saveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
+            <ng-template #unsave><a (click)="unsaveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Unsave</a></ng-template>
             <a (click)="regenerateEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
             <a (click)="removeEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Remove</a>
           </div>

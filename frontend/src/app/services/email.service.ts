@@ -57,8 +57,11 @@ export class EmailService {
     return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary});
   }
 
+  unsaveEmailSummary(emailSummary: any): Observable<any> {
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary, "save": false});
+  }
+
   getSavedEmailSummaries(): Observable<any> {
-    console.log('Fetching saved email summaries');
     return this.http.get<any>(this.apiUrlRoot + 'emails/summaries/saved/');
   }
 

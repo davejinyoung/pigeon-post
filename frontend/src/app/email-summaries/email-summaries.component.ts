@@ -82,6 +82,7 @@ export class EmailSummariesComponent implements OnInit {
 
   saveEmailSummary(emailId: string): void {
     const email = this.emails_with_summaries.find(e => e.id === emailId);
+    this.toggleEmailOptionsDropdown(emailId);
 
     if (!email) {
       console.error(`Email with ID ${emailId} not found.`);
@@ -113,6 +114,7 @@ export class EmailSummariesComponent implements OnInit {
 
   unsaveEmailSummary(emailId: string): void {
     const email = this.emails_with_summaries.find(e => e.id === emailId);
+    this.toggleEmailOptionsDropdown(emailId);
 
     if (!email) {
       console.error(`Email with ID ${emailId} not found.`);
@@ -135,6 +137,7 @@ export class EmailSummariesComponent implements OnInit {
     this.emailService.unsaveEmailSummary(payload).subscribe(
       (response) => {
         console.log('Email summary unsaved successfully:', response);
+        this.emails_with_summaries = this.emails_with_summaries.filter(e => e.id !== emailId);
       },
       (error) => {
         console.error('Error unsaving email summary:', error);

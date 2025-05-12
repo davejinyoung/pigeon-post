@@ -7,6 +7,23 @@
     There was an error loading your email summaries...
   </div>
 
+  <aside id="successAlert" class="hidden fixed z-50 flex items-center justify-center px-5 py-3 bg-green-100 text-green-800 rounded-lg bottom-4 right-4 cursor-pointer">
+    <svg class="mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+      <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>  
+    <a href="#" class="text-lg font-medium :opacity-75">  
+          Email Summary Saved!
+      </a>
+      <button (click)="hideSuccessAlert()" class="cursor-pointer p-1 ml-3 rounded bg-white/20 hover:bg-white/10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd" />
+          </svg>
+      </button>
+  </aside>
+  
+
   <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full" *ngIf="emails_with_summaries.length !== 0 else noSummaries">
     <ul class="space-y-4 m-10">
       <li id="email-{{ email.id }}" class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">

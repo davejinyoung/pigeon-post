@@ -105,11 +105,16 @@ export class EmailSummariesComponent implements OnInit {
     this.emailService.saveEmailSummary(payload).subscribe(
       (response) => {
         console.log('Email summary saved successfully:', response);
+        document.getElementById("successAlert")?.classList.remove('hidden');  
       },
       (error) => {
         console.error('Error saving email summary:', error);
       }
     );
+  }
+
+  hideSuccessAlert(): void {
+    document.getElementById("successAlert")?.classList.add('hidden'); 
   }
 
   unsaveEmailSummary(emailId: string): void {

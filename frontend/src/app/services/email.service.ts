@@ -50,7 +50,11 @@ export class EmailService {
     if (emails.length === 0) {
       return of([]);
     }
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails});
+    return this.postEmailSummaryRequest(emails);
+  }
+
+  postEmailSummaryRequest(emails: any[], isCache=true): Observable<any> {
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails, "cache": isCache});
   }
 
   saveEmailSummary(emailSummary: any): Observable<any> {

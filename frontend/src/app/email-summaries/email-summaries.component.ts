@@ -38,37 +38,22 @@ export class EmailSummariesComponent implements OnInit {
 
   fetchEmailSummaries(): void {
     this.isWaiting = true;
-    if (this.router.url === '/summaries/saved') {
-      this.isSavedPage = true;
-      this.emailService.getSavedEmailSummaries().subscribe(
-        (data) => {
-          this.emails_with_summaries = data.summaries;
-          this.hasSummaryError = false;
-          this.isWaiting = false;
-        },
-        (error) => {
-          console.error('Error fetching saved email summaries:', error);
-          this.hasSummaryError = true;
-          this.isWaiting = false;
-        }
-      );
-      return;
-    } else if (this.router.url === '/summaries') {
-      this.isSavedPage = false;
-      this.emailService.getEmailSummaries().subscribe(
-        (data: EmailSummariesResponse) => {
-          this.emails_with_summaries = data.emails_with_summaries ? data.emails_with_summaries : [];
-          this.hasSummaryError = false;
-          this.isWaiting = false;
-        },
-        (error) => {
-          console.error('Error fetching summaries:', error);
-          this.hasSummaryError = true;
-          this.isWaiting = false;
-        }
-      );
-      return;
-    }
+    const fetchFn = this.router.url === '/summaries/saved'
+      ? this.emailService.getSavedEmailSummaries()
+      : this.emailService.getEmailSummaries();
+
+    fetchFn.subscribe(
+      (data: any) => {
+        this.emails_with_summaries = data.summaries || data.emails_with_summaries || [];
+        this.hasSummaryError = false;
+        this.isWaiting = false;
+        this.isSavedPage = this.router.url === '/summaries/saved';
+      },
+      () => {
+        this.hasSummaryError = true;
+        this.isWaiting = false;
+      }
+    );
   }
 
   toggleEmailOptionsDropdown(emailId: string): void {
@@ -151,7 +136,12 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   regenerateEmailSummary(emailId: string): void {
-    console.log(`Regenerating summary for email ID: ${emailId}`);
+    const index = this.emails_with_summaries.findIndex(e => e.id === emailId);
+    const email = this.emails_with_summaries[index];
+    this.emailService.postEmailSummaryRequest([email], false).subscribe(
+      (data) => {
+        this.emails_with_summaries[index].summary = data.emails_with_summaries[0].summary;
+      })
   }
 
   removeEmailSummary(emailId: string): void {

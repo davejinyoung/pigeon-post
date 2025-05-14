@@ -69,7 +69,7 @@ def extract_emails_from_id(service, email_ids):
     return emails
 
 
-def get_emails_summaries(emails):
+def get_emails_summaries(emails, is_cache):
     try:
         prompt_text = (
             "You are an AI assistant that summarizes emails. For this email, create a concise summary using the following format:\n\n"
@@ -83,7 +83,8 @@ def get_emails_summaries(emails):
             email_content = f"Sender: {email['sender']}\n"
             email_content += f"Subject: {email['subject']}\n"
             email_content += f"Email content: '{clean_body}'\n\n"
-            email['summary'] = summarize_with_ollama(prompt_text + email_content)
+            email['summary'] = summarize_with_ollama(prompt_text + email_content) if is_cache \
+                else summarize_with_ollama.__wrapped__(prompt_text + email_content)
 
         return {'emails_with_summaries': emails}
     except HttpError as error:

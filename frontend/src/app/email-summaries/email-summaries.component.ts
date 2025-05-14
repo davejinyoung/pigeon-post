@@ -18,6 +18,7 @@ export class EmailSummariesComponent implements OnInit {
   isEmailOptionsDropdownHidden = true;
   isWaiting = false;
   isSavedPage = false;
+  isRegenerating = false;
 
   constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router) {}
 
@@ -138,9 +139,12 @@ export class EmailSummariesComponent implements OnInit {
   regenerateEmailSummary(emailId: string): void {
     const index = this.emails_with_summaries.findIndex(e => e.id === emailId);
     const email = this.emails_with_summaries[index];
+    this.toggleEmailOptionsDropdown(emailId);
+    this.emails_with_summaries[index]['isRegenerating'] = true;
     this.emailService.postEmailSummaryRequest([email], false).subscribe(
       (data) => {
         this.emails_with_summaries[index].summary = data.emails_with_summaries[0].summary;
+        this.emails_with_summaries[index]['isRegenerating'] = false;
       })
   }
 

@@ -13,14 +13,10 @@ export class EmailService {
 
   constructor(private http: HttpClient) {}
 
-  getEmails(dateRange?: number, inboxTypes?: {[key: string]: boolean}): Observable<any[]> {
+  getEmails(dateRange?: number, inboxTypes?: string): Observable<any[]> {
     let labels: string[] = [];
     if (inboxTypes) {
-      Object.keys(inboxTypes).forEach((key) => {
-        if (inboxTypes[key] === true) {
-          labels.push(key.toLocaleUpperCase());
-        }
-      });
+      labels.push(inboxTypes.toLocaleUpperCase());
     }
 
     if (dateRange && typeof localStorage !== 'undefined') {

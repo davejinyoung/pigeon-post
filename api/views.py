@@ -10,11 +10,12 @@ from datetime import datetime, timedelta
 
 class EmailsList(APIView):
     max_results = 30
-    label_ids = ['INBOX', 'IMPORTANT', 'UNREAD']
+    label_ids = []
     query = ""
 
     def get(self, request):
-        dt = datetime.today() - timedelta(days=7)
+        dt = datetime.today() - timedelta(days=1)
+        self.query = f"after:{int(dt.timestamp())}"
         emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
@@ -22,7 +23,11 @@ class EmailsList(APIView):
     def post(self, request):
         data = request.data.get("filters")
         dt = datetime.today() - timedelta(days=data['dateRange'])
-        dt = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        # When it is not a 24-hour period
+        if data['dateRange'] != 1:
+            dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+
         self.query = f"after:{int(dt.timestamp())}"
         self.label_ids = data['labels']
         self.max_results = data['maxResults']

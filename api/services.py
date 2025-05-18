@@ -44,13 +44,13 @@ def get_emails(max_results, label_ids, query=""):
         messages = results.get('messages', [])
         email_ids = [message['id'] for message in messages]
 
-        return extract_emails_from_id(service, email_ids)
+        return extract_emails_from_ids(service, email_ids)
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
 
 
-def extract_emails_from_id(service, email_ids):
+def extract_emails_from_ids(service, email_ids):
     emails = []
     for email_id in email_ids:
         msg = service.users().messages().get(userId='me', id=email_id).execute()

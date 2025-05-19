@@ -82,12 +82,20 @@
   <div *ngIf="emails.length != 0 else noEmails">
     <div class="my-10 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">
       <ul class="space-y-4 m-10">
-        <button (click)="selectAllEmails()" type="button" class="inline-flex w-auto justify-left gap-x-1.5 mr-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="date-range-menu-button" aria-expanded="true" aria-haspopup="true">
-          Select All
-        </button>
-        <button (click)="deselectAllEmails()" type="button" class="inline-flex w-auto justify-left gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer" id="date-range-menu-button" aria-expanded="true" aria-haspopup="true">
-          Deselect All
-        </button>
+        <div class="flex items-center gap-3">
+          <button (click)="fetchEmails()" type="button" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </button>
+          <button (click)="selectAllEmails()" type="button" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer">
+            Select All
+          </button>
+          <button (click)="deselectAllEmails()" type="button" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer">
+            Deselect All
+          </button>
+        </div>
         <li *ngFor="let email of emailsPage[currentPage-1]" class="border p-6 rounded-lg shadow-md hover:bg-gray-50">
           <div class="grid grid-cols-[min-content_1fr] items-center">
             <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]"

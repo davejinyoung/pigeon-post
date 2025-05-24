@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,6 +9,15 @@ import { RouterModule } from '@angular/router';
 })
 export class NavbarComponent {
   isProfileMenuHidden = true;
+
+  constructor(private elRef: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+    onClickOutside(event: MouseEvent) {
+      if (!this.elRef.nativeElement.querySelector("#profile-menu")?.contains(event.target)) {
+        this.isProfileMenuHidden = true;
+      }
+    }
 
   toggleProfileMenu() {
     this.isProfileMenuHidden = !this.isProfileMenuHidden;

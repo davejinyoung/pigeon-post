@@ -69,12 +69,16 @@ def extract_emails_from_ids(service, email_ids):
     return emails
 
 
-def get_emails_summaries(emails, is_cache):
+def get_emails_summaries(emails, is_cache, summary_input):
+    custom_user_prompt = f'The user requested that it should be re-summarized as follows: {summary_input}\n. The original summary was this: {emails[0]['summary']}' \
+        if summary_input != "" else summary_input
+
     try:
         prompt_text = (
             "You are an AI assistant that summarizes emails. For this email, create a concise summary using the following format:\n\n"
             "<An explanation of the main purpose of the email - long enough to capture all information concisely.>\n"
             "Do not provide any preambles like ""Here is the summary"". Just output only the summary and nothing else.\n"
+            + custom_user_prompt +
             "Here is the email to summarize:\n\n\n"
         )
 

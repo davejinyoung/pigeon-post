@@ -38,9 +38,10 @@ class EmailsList(APIView):
 class EmailSummaryList(APIView):
     emails = []
     is_cache = True
+    summary_input = ""
 
     def summarize(self):
-        serializer = EmailSummariesSerializer(get_emails_summaries(self.emails, self.is_cache))
+        serializer = EmailSummariesSerializer(get_emails_summaries(self.emails, self.is_cache, self.summary_input))
         return Response(serializer.data)
 
     def get(self, request):
@@ -49,6 +50,7 @@ class EmailSummaryList(APIView):
     def post(self, request):
         emails = request.data.get("emails", [])
         self.is_cache = request.data.get("cache", True)
+        self.summary_input = request.data.get("summary_input", "")
 
         if not emails:
             return Response({"error": "No email IDs provided"}, status=status.HTTP_400_BAD_REQUEST)

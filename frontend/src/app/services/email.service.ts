@@ -49,8 +49,8 @@ export class EmailService {
     return this.postEmailSummaryRequest(emails);
   }
 
-  postEmailSummaryRequest(emails: any[], isCache=true): Observable<any> {
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails, "cache": isCache});
+  postEmailSummaryRequest(emails: any[], isCache=true, summaryInput=""): Observable<any> {
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails, "cache": isCache, "summary_input": summaryInput});
   }
 
   saveEmailSummary(emailSummary: any): Observable<any> {

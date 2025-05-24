@@ -1,8 +1,9 @@
-import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
 import { Router } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class EmailSummariesComponent implements OnInit {
   isSavedPage = false;
   isRegenerating = false;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router) {}
+  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router, private dialog: Dialog) {}
 
   ngOnInit(): void {
     this.fetchEmailSummaries();
@@ -136,22 +137,33 @@ export class EmailSummariesComponent implements OnInit {
     );
   }
 
-  regenerateEmailSummary(emailId: string): void {
+  regenerateEmailSummary(emailId: string, summaryInput: string): void {
     const index = this.emails_with_summaries.findIndex(e => e.id === emailId);
     const email = this.emails_with_summaries[index];
     this.toggleEmailOptionsDropdown(emailId);
     this.emails_with_summaries[index]['isRegenerating'] = true;
-    this.emailService.postEmailSummaryRequest([email], false).subscribe(
+    this.emailService.postEmailSummaryRequest([email], false, summaryInput).subscribe(
       (data) => {
         this.emails_with_summaries[index].summary = data.emails_with_summaries[0].summary;
         this.emails_with_summaries[index]['isRegenerating'] = false;
       })
+    this.closeModal();
   }
 
   removeEmailSummary(emailId: string): void {
     document.getElementById(`email-${emailId}`)?.remove();
     this.emails_with_summaries = this.emails_with_summaries.filter(email => email.id !== emailId);
     this.emailService.setSelectedEmails(this.emails_with_summaries);
+  }
+
+  openModal(templateRef: TemplateRef<any>): void {
+    this.dialog.open(templateRef, {
+      width: '400px',
+    });
+  }
+
+  closeModal(): void {
+    this.dialog.closeAll();
   }
 }
 

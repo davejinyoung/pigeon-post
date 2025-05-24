@@ -62,9 +62,31 @@
           >
             <div *ngIf="!isSavedPage else unsave">
               <a (click)="saveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
-              <a (click)="regenerateEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
+              <a (click)="openModal(emailSummaryModal)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
               <a (click)="removeEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Remove</a>
             </div>
+            <ng-template #emailSummaryModal>
+              <div class="p-6 bg-white rounded-lg shadow-lg w-96">
+                <h2 class="text-lg font-bold mb-4">Regenerate Email Summary</h2>
+                <div class="mb-4">
+                  <textarea
+                    id="summaryInput"
+                    #summaryInput
+                    rows="4"
+                    class="my-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Add more details about the email, summarize it in a different way, etc."
+                  ></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                  <button (click)="closeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">
+                    Close
+                  </button>
+                  <button (click)="regenerateEmailSummary(email.id, summaryInput.value)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                    Regenerate
+                  </button>
+                </div>
+              </div>
+            </ng-template>
             <ng-template #unsave><a (click)="unsaveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Unsave</a></ng-template>
           </div>
         </div>

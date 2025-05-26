@@ -3,6 +3,7 @@ import base64
 import subprocess
 import datetime
 import functools
+import html
 import re
 from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
@@ -61,7 +62,7 @@ def extract_emails_from_ids(service, email_ids):
             'sender': header_data['sender'],
             'internal_date': convert_internal_date(msg['internalDate']),
             'subject': header_data['subject'],
-            'snippet': msg['snippet'],
+            'snippet': html.unescape(msg['snippet']),
             'body': body,
             'thread_id': msg['threadId']
         })
@@ -69,17 +70,19 @@ def extract_emails_from_ids(service, email_ids):
     return emails
 
 
-def get_emails_summaries(emails, is_cache, summary_input):
-    custom_user_prompt = f'The user requested that it should be re-summarized as follows: {summary_input}\n. The original summary was this: {emails[0]['summary']}' \
-        if summary_input != "" else summary_input
-
+def get_emails_summaries(emails, is_cache, summary_feedback):
     try:
         prompt_text = (
             "You are an AI assistant that summarizes emails. For this email, create a concise summary using the following format:\n\n"
             "<An explanation of the main purpose of the email - long enough to capture all information concisely.>\n"
-            "Do not provide any preambles like ""Here is the summary"". Just output only the summary and nothing else.\n"
-            + custom_user_prompt +
+            "Do not provide any preambles like \"Here is the summary.\" Just output only the summary and nothing else.\n"
             "Here is the email to summarize:\n\n\n"
+        ) if summary_feedback == "" else (
+            f"You are an AI assistant that summarizes emails. The previous summary was not satisfactory.\n"
+            f"The user has provided the following feedback on the summary: {summary_feedback}\n"
+            f"The original summary was:\n{emails[0]['summary']}\n\n"
+            f"Please rewrite the summary based on the original email content below. Do not include any preambles like \"Here is the summary.\""
+            f"Only output the improved summary:\n\n\n"
         )
 
         for email in emails:

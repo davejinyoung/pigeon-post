@@ -22,7 +22,7 @@
               <button value="30" (click)="setAutoDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 30 Days</button>
             </div>
             <div class="py-1" role="none">
-              <button (click)="openCustomDateModal()" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-6">Custom</button>
+              <button (click)="openCustomDateModal(customDateModal)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-6">Custom</button>
             </div>
           </div>
         </div>
@@ -55,11 +55,10 @@
           Apply Filters
         </button>
       </div>
-
     </div>
   </div>
 
-  <div *ngIf="isCustomDateModalOpen" class="fixed inset-0 z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
+  <ng-template #customDateModal>
     <div class="bg-white rounded-lg shadow-lg p-6 w-96">
       <h2 class="text-lg font-semibold mb-4">Select Custom Date Range</h2>
       <div class="mb-4">
@@ -77,7 +76,7 @@
         <button (click)="setCustomDateRangeFilter()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">Apply</button>
       </div>
     </div>
-  </div>
+  </ng-template>
 
   <div *ngIf="emails.length != 0 else noEmails">
     <div class="my-10 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full">

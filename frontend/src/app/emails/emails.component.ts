@@ -1,10 +1,11 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
 import { FormsModule } from '@angular/forms';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'emails',
@@ -19,7 +20,6 @@ export class EmailsComponent implements OnInit {
   isDateRangeMenuHidden = true;
   isInboxTypeMenuHidden = true;
   isWaiting = false;
-  isCustomDateModalOpen = false;
   todayDate: string = '';
   customStartDate: string = "";
   customEndDate: string = this.todayDate;
@@ -33,7 +33,7 @@ export class EmailsComponent implements OnInit {
   inboxTypeLabel: string = "All Mail";
   inboxType?: string;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private router: Router, private elRef: ElementRef) {
+  constructor(private emailService: EmailService, public dateService: DateService, private router: Router, private elRef: ElementRef, private dialog: Dialog) {
     this.todayDate = this.dateService.formatDate(new Date());
     this.customEndDate = this.todayDate;
     this.customStartDate = this.todayDate;
@@ -148,12 +148,14 @@ export class EmailsComponent implements OnInit {
     }
   }
 
-  openCustomDateModal() {
-    this.isCustomDateModalOpen = true;
+  openCustomDateModal(templateRef: TemplateRef<any>): void {
+    this.dialog.open(templateRef, {
+      autoFocus: false
+    });
   }
 
   closeCustomDateModal() {
-    this.isCustomDateModalOpen = false;
+    this.dialog.closeAll();
     this.customStartDateError = null;
     this.customEndDateError = null;
   }

@@ -157,9 +157,7 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   openModal(templateRef: TemplateRef<any>): void {
-    this.dialog.open(templateRef, {
-      width: '400px',
-    });
+    this.dialog.open(templateRef);
   }
 
   closeModal(): void {

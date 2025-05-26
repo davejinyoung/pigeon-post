@@ -124,9 +124,9 @@
           <div *ngFor="let page of emailsPage; let i = index" [ngClass]="{'font-bold': currentPage === i + 1}" class="mb-8 mx-4 cursor-pointer hover:underline">
             <a (click)="navigatePage(i+1)">{{ i + 1 }}</a>
           </div>
-          <a (click)="navigatePage(currentPage + 1)" class="mb-8 mx-4 cursor-pointer hover:underline">Next</a>
+          <a (click)="navigatePage(currentPage + 1)" class="mb-10 mx-4 cursor-pointer hover:underline">Next</a>
         </div>
-        <a (click)="sendEmailIds()" class="w-72 h-12 flex items-center justify-center cursor-pointer bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded">
+        <a (click)="sendEmailIds()" class="fixed bottom-5 w-48 h-12 flex items-center justify-center cursor-pointer bg-gray-800 hover:bg-gray-900 text-white text-lg shadow-lg font-semibold rounded-full">
           Summarize
         </a>
       </div>

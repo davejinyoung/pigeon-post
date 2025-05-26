@@ -24,10 +24,10 @@
   </aside>
   
 
-  <div class="my-20 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full" *ngIf="emails_with_summaries.length !== 0 else noSummaries">
+  <div class="my-10 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full" *ngIf="emails_with_summaries.length !== 0 else noSummaries">
     <ul class="space-y-4 m-10">
       <li id="email-{{ email.id }}" class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
-        <div class="flex border p-6 rounded-lg shadow-md hover:bg-gray-50 items-center" [ngClass]="{ 'bg-gray-200': email.isRegenerating }">
+        <div class="flex border border-gray-100 p-6 rounded-lg shadow-md hover:bg-gray-50 items-center" [ngClass]="{ 'bg-gray-200': email.isRegenerating }">
           <label class="flex flex-col" for='email-{{ email.id }}'>
             <div class="flex justify-between items-center">
               <span class="text-left font-bold">FROM: {{ email.sender }}</span>

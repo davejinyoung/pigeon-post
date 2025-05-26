@@ -96,7 +96,7 @@
             Deselect All
           </button>
         </div>
-        <li *ngFor="let email of emailsPage[currentPage-1]" class="border p-6 rounded-lg shadow-md hover:bg-gray-50">
+        <li *ngFor="let email of emailsPage[currentPage-1]" class="p-6 border border-gray-100 rounded-lg shadow-md hover:bg-gray-50">
           <div class="grid grid-cols-[min-content_1fr] items-center">
             <input id='email-{{ email.id }}' type='checkbox' [value]="email.id" [(ngModel)]="selectedEmailIds[email.id]"
               class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm cursor-pointer">

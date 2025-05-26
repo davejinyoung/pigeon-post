@@ -3,7 +3,7 @@
 </div>
 
 <ng-template #renderedEmails>
-  <div class="flex justify-center m-10">
+  <div class="flex justify-center mt-28">
     <div class="relative inline-block text-left">
       <div class="grid grid-flow-col auto-cols-auto gap-2">
 
@@ -14,7 +14,7 @@
               <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
             </svg>
           </button>
-          <div class="absolute left-0 z-10 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden" [hidden]="isDateRangeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="date-range-menu-button" tabindex="-1">
+          <div class="absolute left-0 mt-2 origin-top-left divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden" [hidden]="isDateRangeMenuHidden" role="menu" aria-orientation="vertical" aria-labelledby="date-range-menu-button" tabindex="-1">
             <div class="py-1" role="none">
               <button value="1" (click)="setAutoDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-0">Last 24 Hours</button>
               <button value="3" (click)="setAutoDateRangeFilter($event)" class="block text-left w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="menu-item-1">Last 3 Days</button>

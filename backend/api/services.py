@@ -6,11 +6,13 @@ import functools
 import html
 import re
 from bs4 import BeautifulSoup
+from groq import Groq
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
+from django.conf import settings
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -90,8 +92,8 @@ def get_emails_summaries(emails, is_cache, summary_feedback):
             email_content = f"Sender: {email['sender']}\n"
             email_content += f"Subject: {email['subject']}\n"
             email_content += f"Email content: '{clean_body}'\n\n"
-            email['summary'] = summarize_with_ollama(prompt_text + email_content) if is_cache \
-                else summarize_with_ollama.__wrapped__(prompt_text + email_content)
+            email['summary'] = summarize(prompt_text + email_content) if is_cache \
+                else summarize.__wrapped__(prompt_text + email_content)
 
         return {'emails_with_summaries': emails}
     except HttpError as error:
@@ -160,13 +162,19 @@ def extract_email_body(msg):
 
 
 @functools.cache
-def summarize_with_ollama(content):
-    result = subprocess.run(
-        ["ollama", "run", "llama3.2", content],
-        capture_output=True, text=True
+def summarize(content):
+    client = Groq(api_key=settings.GROQ_API_KEY)
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": content,
+            }
+        ],
+        model="llama-3.3-70b-versatile",
     )
 
-    return result.stdout.strip()
+    return chat_completion.choices[0].message.content.strip()
 
 
 def clean_email_body(content, is_html=True):

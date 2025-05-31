@@ -8,7 +8,7 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
 export class EmailService {
   private apiUrlRoot = 'http://127.0.0.1:8000/api/';
 
-  private selectedEmailsSubject = new BehaviorSubject<string[]>([]); 
+  private selectedEmailsSubject = new BehaviorSubject<string[]>([]);
   selectedEmails$ = this.selectedEmailsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -26,7 +26,7 @@ export class EmailService {
     if (typeof localStorage === 'undefined') {
       return this.http.get<any[]>(this.apiUrlRoot + 'emails/');
     };
-    
+
     let emailFilters: emailFilters = {
       dateRange: JSON.parse(localStorage.getItem('emailFilters') || '0'),
       labels: labels,
@@ -35,6 +35,13 @@ export class EmailService {
     }
 
     return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters});
+  }
+
+  trashEmails(emails: any[]): Observable<any> {
+    if (emails.length === 0) {
+      return of({ success: true });
+    }
+    return this.http.post<any>(this.apiUrlRoot + 'emails/trash/', {"email_ids": emails});
   }
 
   postEmailFilters(filters: any): Observable<any> {
@@ -68,14 +75,14 @@ export class EmailService {
   setSelectedEmails(emails: any[]) {
     this.selectedEmailsSubject.next(emails);
 
-    if (typeof localStorage !== 'undefined') { 
-      localStorage.setItem('selectedEmails', JSON.stringify(emails));  
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('selectedEmails', JSON.stringify(emails));
     }
   }
-  
+
   getSelectedEmails(): any[] {
     if (typeof localStorage === 'undefined') return [];
-    
+
     const storedEmails = localStorage.getItem('selectedEmails');
     return storedEmails ? JSON.parse(storedEmails) : [];
   }

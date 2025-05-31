@@ -100,12 +100,30 @@ export class EmailsComponent implements OnInit {
     }
   }
 
+  trashSelectedEmails(): void {
+    const ids = this.updateSelectedEmailIds();
+    if (ids.length === 0) {
+      console.error('No email IDs selected');
+      return;
+    }
+    this.emailService.trashEmails(ids).subscribe(
+      (response) => {
+        this.emailsPage[this.currentPage - 1] = this.emailsPage[this.currentPage - 1].filter(
+          (email: any) => !ids.includes(email.id)
+        );
+      },
+      (error) => {
+        console.error('Error deleting emails:', error);
+        this.isWaiting = false;
+      }
+    );
+  }
+
   selectAllEmails(): void {
     this.emails.forEach((email) => {
       this.selectedEmailIds[email.id] = true;
     });
     this.updateSelectedEmailIds();
-    
   }
 
   deselectAllEmails(): void {
@@ -119,7 +137,7 @@ export class EmailsComponent implements OnInit {
     const selectedIds = Object.keys(this.selectedEmailIds).filter(emailId => this.selectedEmailIds[emailId]);
     const selectedEmails = this.emails.filter(email => selectedIds.includes(email.id));
     this.emailService.setSelectedEmails(selectedEmails);
-    
+
     return selectedIds;
   }
 
@@ -140,8 +158,8 @@ export class EmailsComponent implements OnInit {
 
   updateDateRangeLabel(): void {
     if (this.customEndDate == this.dateService.formatDate(new Date())) {
-      this.dateRangeLabel = (this.emailFilters.dateRange != 1) ? 
-        "Last " + this.emailFilters.dateRange + " Days" : 
+      this.dateRangeLabel = (this.emailFilters.dateRange != 1) ?
+        "Last " + this.emailFilters.dateRange + " Days" :
         "Last 24 Hours";
     } else {
       this.dateRangeLabel = this.customStartDate + " - " + this.customEndDate;
@@ -201,7 +219,7 @@ export class EmailsComponent implements OnInit {
         this.inboxTypeLabel = filter.charAt(0).toUpperCase() + filter.slice(1);
       }
     }
-    
+
     this.toggleInboxTypeMenu();
   }
 

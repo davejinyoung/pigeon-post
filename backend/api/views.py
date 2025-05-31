@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EmailSummary
-from .services import get_emails, get_emails_summaries
+from .services import get_emails, get_emails_summaries, trash_emails
 from .serializers import EmailSummariesSerializer, EmailSerializer, EmailSummarySaveSerializer
 from datetime import datetime, timedelta
 
@@ -34,6 +34,23 @@ class EmailsList(APIView):
         emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
+
+
+class EmailsTrash(APIView):
+    def post(self, request):
+        try:
+            email_ids = request.data.get("email_ids", [])
+            if not email_ids:
+                return JsonResponse({"error": "No email IDs provided"}, status=400)
+
+            trash_emails(email_ids)
+            return JsonResponse(
+                {"message": "Emails trashed successfully", "emails": email_ids},
+                status=200
+            )
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
 
 class EmailSummaryList(APIView):
     emails = []

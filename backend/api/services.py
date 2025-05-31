@@ -14,7 +14,7 @@ from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 from django.conf import settings
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ['https://mail.google.com/']
 
 def get_gmail_service():
     creds = None
@@ -48,6 +48,19 @@ def get_emails(max_results, label_ids, query=""):
         email_ids = [message['id'] for message in messages]
 
         return extract_emails_from_ids(service, email_ids)
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return None
+
+
+def trash_emails(email_ids):
+    service = get_gmail_service()
+    try:
+        for email_id in email_ids:
+            service.users().messages().trash(
+                userId='me',
+                id=email_id
+            ).execute()
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None

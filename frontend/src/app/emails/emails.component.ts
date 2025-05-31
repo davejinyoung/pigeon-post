@@ -60,32 +60,37 @@ export class EmailsComponent implements OnInit {
 
   fetchEmails(dateRange?: number): void {
     this.isWaiting = true;
-    this.emailsPage = [];
     this.currentPage = 1;
     this.emailService.getEmails(dateRange, this.inboxType).subscribe(
       (data) => {
         this.emails = data;
-
-        // Check if there are any emails
-        this.emailService.getSelectedEmails().forEach((email) => {
-          const selectedEmail = this.emails.find(e => e.id === email.id);
-          if (selectedEmail) {
-            this.selectedEmailIds[selectedEmail.id] = true;
-          }
-        });
-
-        this.numberOfPages = Math.ceil(this.emails.length / this.emailsPerPage);
-        // for every page, slice the emails array to get the emails for that page
-        for (let i = 0; i < this.numberOfPages; i++) {
-          this.emailsPage.push(this.emails.slice(i * this.emailsPerPage, (i + 1) * this.emailsPerPage));
-        }
-        this.isWaiting = false;
+        this.initializeEmails()
       },
       (error) => {
         console.error('Error fetching emails:', error);
         this.isWaiting = false;
       }
     );
+  }
+
+  initializeEmails(): void {
+    // Check if there are any emails
+    this.emailService.getSelectedEmails().forEach((email) => {
+      const selectedEmail = this.emails.find(e => e.id === email.id);
+      if (selectedEmail) {
+        this.selectedEmailIds[selectedEmail.id] = true;
+      }
+    });
+  
+    this.numberOfPages = Math.ceil(this.emails.length / this.emailsPerPage);
+  
+    // For every page, slice the emails array to get the emails for that page
+    this.emailsPage = [];
+    for (let i = 0; i < this.numberOfPages; i++) {
+      this.emailsPage.push(this.emails.slice(i * this.emailsPerPage, (i + 1) * this.emailsPerPage));
+    }
+  
+    this.isWaiting = false;
   }
 
   async sendEmailIds() {
@@ -102,15 +107,19 @@ export class EmailsComponent implements OnInit {
 
   trashSelectedEmails(): void {
     const ids = this.updateSelectedEmailIds();
+
     if (ids.length === 0) {
       console.error('No email IDs selected');
       return;
     }
+
+    this.emails = this.emails.filter(email => !ids.includes(email.id));
+    console.log('Selected email IDs:', ids);
+    console.log('Emails after deletion:', this.emails);
+    this.initializeEmails();
     this.emailService.trashEmails(ids).subscribe(
       (response) => {
-        this.emailsPage[this.currentPage - 1] = this.emailsPage[this.currentPage - 1].filter(
-          (email: any) => !ids.includes(email.id)
-        );
+        this.updateSelectedEmailIds();
       },
       (error) => {
         console.error('Error deleting emails:', error);

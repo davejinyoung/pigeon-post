@@ -39,7 +39,7 @@ def get_gmail_service():
 
 
 @functools.cache
-def get_emails(max_results, label_ids, query=""):
+def get_emails(max_results, label_ids, query="-label:trash"):
     label_ids = list(label_ids)
     try:
         service = get_gmail_service()
@@ -61,6 +61,7 @@ def trash_emails(email_ids):
                 userId='me',
                 id=email_id
             ).execute()
+        get_emails.cache_clear()
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None

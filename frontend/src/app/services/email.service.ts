@@ -41,6 +41,7 @@ export class EmailService {
     if (emails.length === 0) {
       return of({ success: true });
     }
+    localStorage.removeItem('selectedEmails');
     return this.http.post<any>(this.apiUrlRoot + 'emails/trash/', {"email_ids": emails});
   }
 

@@ -1,48 +1,46 @@
-import os
 import base64
-import subprocess
 import datetime
 import functools
 import html
 import re
 from bs4 import BeautifulSoup
 from groq import Groq
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request as GoogleRequest
 
 SCOPES = ['https://mail.google.com/']
 
-def get_gmail_service():
-    creds = None
-    if os.path.exists('api/token.json'):
-        creds = Credentials.from_authorized_user_file("api/token.json", SCOPES)
+def get_gmail_service(request):
+    creds_data = request.session.get('gmail_credentials')
+    if not creds_data:
+        raise PermissionDenied("Gmail credentials not found in session")
 
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'api/credentials.json', SCOPES)
-            creds = flow.run_local_server(port=8080, access_type='offline') # add prompt='consent' arg for refresh token and delete existing token.json file
+    creds = Credentials(
+        token=creds_data['token'],
+        refresh_token=creds_data['refresh_token'],
+        token_uri=creds_data['token_uri'],
+        client_id=creds_data['client_id'],
+        client_secret=creds_data['client_secret'],
+        scopes=creds_data['scopes'],
+    )
 
-        # Save the credentials for the next run
-        with open('api/token.json', 'w') as token:
-            token.write(creds.to_json())
+    if not creds.valid and creds.expired and creds.refresh_token:
+        creds.refresh(GoogleRequest())
+        creds_data['token'] = creds.token
+        request.session['gmail_credentials'] = creds_data
 
-    service = build('gmail', 'v1', credentials=creds)
-
-    return service
+    return build('gmail', 'v1', credentials=creds)
 
 
 @functools.cache
-def get_emails(max_results, label_ids, query="-label:trash"):
+def get_emails(request, max_results, label_ids, query="-label:trash"):
     label_ids = list(label_ids)
     try:
-        service = get_gmail_service()
+        service = get_gmail_service(request)
         results = service.users().messages().list(userId='me', maxResults=max_results, labelIds=label_ids, q=query).execute()
         messages = results.get('messages', [])
         email_ids = [message['id'] for message in messages]
@@ -53,8 +51,8 @@ def get_emails(max_results, label_ids, query="-label:trash"):
         return None
 
 
-def trash_emails(email_ids):
-    service = get_gmail_service()
+def trash_emails(request, email_ids):
+    service = get_gmail_service(request)
     try:
         for email_id in email_ids:
             service.users().messages().trash(

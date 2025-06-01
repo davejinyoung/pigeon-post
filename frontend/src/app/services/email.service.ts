@@ -1,17 +1,36 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmailService {
-  private apiUrlRoot = 'http://127.0.0.1:8000/api/';
+  private apiUrlRoot = 'http://localhost:8000/api/';
 
   private selectedEmailsSubject = new BehaviorSubject<string[]>([]);
   selectedEmails$ = this.selectedEmailsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  getCsrfToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      const name = 'csrftoken=';
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const cookies = decodedCookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
+        if (cookie.indexOf(name) === 0) {
+          return cookie.substring(name.length, cookie.length);
+        }
+      }
+    }
+    return null;
+  }
 
   getEmails(dateRange?: number, inboxTypes?: string): Observable<any[]> {
     let labels: string[] = [];
@@ -23,8 +42,12 @@ export class EmailService {
       localStorage.setItem('emailFilters', JSON.stringify(dateRange));
     }
 
+    const headers = new HttpHeaders({
+      'X-CSRFToken': this.getCsrfToken() || '',
+    });
+
     if (typeof localStorage === 'undefined') {
-      return this.http.get<any[]>(this.apiUrlRoot + 'emails/');
+      return this.http.get<any[]>(this.apiUrlRoot + 'emails/', { headers, withCredentials: true });
     };
 
     let emailFilters: emailFilters = {
@@ -34,7 +57,7 @@ export class EmailService {
       maxResults: 30
     }
 
-    return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters});
+    return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters}, { headers, withCredentials: true });
   }
 
   trashEmails(emails: any[]): Observable<any> {
@@ -42,7 +65,12 @@ export class EmailService {
       return of({ success: true });
     }
     localStorage.removeItem('selectedEmails');
-    return this.http.post<any>(this.apiUrlRoot + 'emails/trash/', {"email_ids": emails});
+
+    const headers = new HttpHeaders({
+      'X-CSRFToken': this.getCsrfToken() || '',
+    });
+
+    return this.http.post<any>(this.apiUrlRoot + 'emails/trash/', {"email_ids": emails}, { headers, withCredentials: true });
   }
 
   postEmailFilters(filters: any): Observable<any> {

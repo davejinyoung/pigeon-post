@@ -11,7 +11,7 @@ import { Dialog } from '@angular/cdk/dialog';
   selector: 'emails',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './emails.component.html',
-  styleUrls: ['./emails.component.css']
+  styleUrls: ['./emails.component.scss']
 })
 export class EmailsComponent implements OnInit {
   emails: any[] = [];

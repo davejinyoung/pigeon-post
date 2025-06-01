@@ -1,4 +1,7 @@
+from django.shortcuts import redirect
+from django.contrib.auth import login, logout
 from django.http import JsonResponse
+from google_auth_oauthlib.flow import Flow
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,6 +9,61 @@ from .models import EmailSummary
 from .services import get_emails, get_emails_summaries, trash_emails
 from .serializers import EmailSummariesSerializer, EmailSerializer, EmailSummarySaveSerializer
 from datetime import datetime, timedelta
+
+SCOPES = ['https://mail.google.com/']
+
+def google_auth_init(request):
+    flow = Flow.from_client_secrets_file(
+        'api/credentials.json',
+        scopes=SCOPES,
+        redirect_uri='http://localhost:8000/api/auth/gmail/callback/'
+    )
+    auth_url, _ = flow.authorization_url(
+        access_type='offline',
+        prompt='consent'
+    )
+    print(f"Redirect URI: {flow.redirect_uri}")  # Log the redirect URI
+    request.session['oauth_state'] = flow.oauth2session._state
+    return redirect(auth_url)
+
+
+def gmail_auth_callback(request):
+    try:
+        state = request.session.get('oauth_state')
+        code = request.GET.get('code')
+
+        if not code:
+            return JsonResponse({'error': 'Authorization code not provided'}, status=400)
+
+        flow = Flow.from_client_secrets_file(
+            'api/credentials.json',
+            scopes=SCOPES,
+            redirect_uri='http://localhost:8000/api/auth/gmail/callback/',
+            state=state
+        )
+        flow.fetch_token(code=code)
+
+        creds = flow.credentials
+
+        # Save credentials in the session
+        request.session['gmail_credentials'] = {
+            'token': creds.token,
+            'refresh_token': creds.refresh_token,
+            'token_uri': creds.token_uri,
+            'client_id': creds.client_id,
+            'client_secret': creds.client_secret,
+            'scopes': creds.scopes
+        }
+
+        return redirect('http://localhost:4200/emails')
+    except Exception as e:
+        return JsonResponse({'error': f'Failed to handle Gmail OAuth callback: {str(e)}'}, status=500)
+
+
+class Logout(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({'message': 'Logged out successfully'})
 
 
 class EmailsList(APIView):
@@ -16,7 +74,7 @@ class EmailsList(APIView):
     def get(self, request):
         dt = datetime.today() - timedelta(days=1)
         self.query = f"after:{int(dt.timestamp())}"
-        emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
+        emails = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
@@ -31,7 +89,7 @@ class EmailsList(APIView):
         self.query = f"after:{int(dt.timestamp())}"
         self.label_ids = data['labels']
         self.max_results = data['maxResults']
-        emails = get_emails(max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
+        emails = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
@@ -43,7 +101,7 @@ class EmailsTrash(APIView):
             if not email_ids:
                 return JsonResponse({"error": "No email IDs provided"}, status=400)
 
-            trash_emails(email_ids)
+            trash_emails(request, email_ids)
             return JsonResponse(
                 {"message": "Emails trashed successfully", "emails": email_ids},
                 status=200

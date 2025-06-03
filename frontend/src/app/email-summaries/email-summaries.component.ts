@@ -51,9 +51,12 @@ export class EmailSummariesComponent implements OnInit {
         this.isWaiting = false;
         this.isSavedPage = this.router.url === '/summaries/saved';
       },
-      () => {
+      (error) => {
         this.hasSummaryError = true;
         this.isWaiting = false;
+        if (error.status === 403) {
+          this.router.navigate(['/login']);
+        }
       }
     );
   }

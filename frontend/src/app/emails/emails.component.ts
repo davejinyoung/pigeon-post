@@ -67,8 +67,10 @@ export class EmailsComponent implements OnInit {
         this.initializeEmails()
       },
       (error) => {
-        console.error('Error fetching emails:', error);
         this.isWaiting = false;
+        if (error.status === 403) {
+          this.router.navigate(['/login']);
+        }
       }
     );
   }
@@ -114,9 +116,8 @@ export class EmailsComponent implements OnInit {
     }
 
     this.emails = this.emails.filter(email => !ids.includes(email.id));
-    console.log('Selected email IDs:', ids);
-    console.log('Emails after deletion:', this.emails);
     this.initializeEmails();
+
     this.emailService.trashEmails(ids).subscribe(
       (response) => {
         this.updateSelectedEmailIds();

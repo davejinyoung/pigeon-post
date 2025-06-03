@@ -9,6 +9,7 @@ from .models import EmailSummary
 from .services import get_emails, get_emails_summaries, trash_emails
 from .serializers import EmailSummariesSerializer, EmailSerializer, EmailSummarySaveSerializer
 from datetime import datetime, timedelta
+from .decorators import token_required
 
 SCOPES = ['https://mail.google.com/']
 
@@ -71,6 +72,7 @@ class EmailsList(APIView):
     label_ids = []
     query = ""
 
+    @token_required
     def get(self, request):
         dt = datetime.today() - timedelta(days=1)
         self.query = f"after:{int(dt.timestamp())}"
@@ -78,6 +80,7 @@ class EmailsList(APIView):
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
+    @token_required
     def post(self, request):
         data = request.data.get("filters")
         dt = datetime.today() - timedelta(days=data['dateRange'])
@@ -95,6 +98,7 @@ class EmailsList(APIView):
 
 
 class EmailsTrash(APIView):
+    @token_required
     def post(self, request):
         try:
             email_ids = request.data.get("email_ids", [])
@@ -119,9 +123,11 @@ class EmailSummaryList(APIView):
         serializer = EmailSummariesSerializer(get_emails_summaries(self.emails, self.is_cache, self.summary_input))
         return Response(serializer.data)
 
+    @token_required
     def get(self, request):
         return self.summarize()
 
+    @token_required
     def post(self, request):
         emails = request.data.get("emails", [])
         self.is_cache = request.data.get("cache", True)
@@ -135,7 +141,7 @@ class EmailSummaryList(APIView):
         return self.summarize()
 
 class EmailSummarySave(APIView):
-
+    @token_required
     def get(self, request):
         summaries = EmailSummary.objects.all()
         serializer = EmailSummarySaveSerializer(summaries, many=True)
@@ -147,6 +153,7 @@ class EmailSummarySave(APIView):
             status=200,
         )
 
+    @token_required
     def post(self, request):
         summary = request.data.get("summary", [])
         save = request.data.get("save", True)

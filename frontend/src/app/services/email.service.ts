@@ -17,7 +17,7 @@ export class EmailService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  getCsrfToken(): string | null {
+  getCsrfTokenHeader(): HttpHeaders  {
     if (isPlatformBrowser(this.platformId)) {
       const name = 'csrftoken=';
       const decodedCookie = decodeURIComponent(document.cookie);
@@ -25,11 +25,13 @@ export class EmailService {
       for (let i = 0; i < cookies.length; i++) {
         let cookie = cookies[i].trim();
         if (cookie.indexOf(name) === 0) {
-          return cookie.substring(name.length, cookie.length);
+          return new HttpHeaders({
+            'X-CSRFToken': cookie.substring(name.length, cookie.length) || '',
+          });
         }
       }
     }
-    return null;
+    return new HttpHeaders();
   }
 
   getEmails(dateRange?: number, inboxTypes?: string): Observable<any[]> {
@@ -42,12 +44,11 @@ export class EmailService {
       localStorage.setItem('emailFilters', JSON.stringify(dateRange));
     }
 
-    const headers = new HttpHeaders({
-      'X-CSRFToken': this.getCsrfToken() || '',
-    });
-
     if (typeof localStorage === 'undefined') {
-      return this.http.get<any[]>(this.apiUrlRoot + 'emails/', { headers, withCredentials: true });
+      return this.http.get<any[]>(
+        this.apiUrlRoot + 'emails/', 
+        { headers: this.getCsrfTokenHeader(), withCredentials: true }
+      );
     };
 
     let emailFilters: emailFilters = {
@@ -57,7 +58,10 @@ export class EmailService {
       maxResults: 30
     }
 
-    return this.http.post<any[]>(this.apiUrlRoot + 'emails/', {"filters": emailFilters}, { headers, withCredentials: true });
+    return this.http.post<any[]>(
+      this.apiUrlRoot + 'emails/', {"filters": emailFilters}, 
+      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+    );
   }
 
   trashEmails(emails: any[]): Observable<any> {
@@ -65,40 +69,50 @@ export class EmailService {
       return of({ success: true });
     }
     localStorage.removeItem('selectedEmails');
-
-    const headers = new HttpHeaders({
-      'X-CSRFToken': this.getCsrfToken() || '',
-    });
-
-    return this.http.post<any>(this.apiUrlRoot + 'emails/trash/', {"email_ids": emails}, { headers, withCredentials: true });
+    return this.http.post<any>(
+      this.apiUrlRoot + 'emails/trash/', {"email_ids": emails}, 
+      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+    );
   }
 
   postEmailFilters(filters: any): Observable<any> {
-    return this.http.post<any>(this.apiUrlRoot + 'emails/', filters);
+    return this.http.post<any>(
+      this.apiUrlRoot + 'emails/', filters
+    );
   }
 
   getEmailSummaries(): Observable<any> {
     const emails = this.getSelectedEmails();
-    if (emails.length === 0) {
-      return of([]);
-    }
     return this.postEmailSummaryRequest(emails);
   }
 
+  getSavedEmailSummaries(): Observable<any> {
+    return this.http.get<any>(
+      this.apiUrlRoot + 'emails/summaries/saved/', 
+      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+    );
+  }
+
   postEmailSummaryRequest(emails: any[], isCache=true, summaryFeedback=""): Observable<any> {
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {"emails": emails, "cache": isCache, "summary_input": summaryFeedback});
+    return this.http.post<any>(
+      this.apiUrlRoot + 'emails/summaries/', 
+      {"emails": emails, "cache": isCache, "summary_input": summaryFeedback}, 
+      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+    );
   }
 
   saveEmailSummary(emailSummary: any): Observable<any> {
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary});
+    return this.http.post<any>(
+      this.apiUrlRoot + 'emails/summaries/saved/', 
+      {"summary": emailSummary}
+    );
   }
 
   unsaveEmailSummary(emailSummary: any): Observable<any> {
-    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {"summary": emailSummary, "save": false});
-  }
-
-  getSavedEmailSummaries(): Observable<any> {
-    return this.http.get<any>(this.apiUrlRoot + 'emails/summaries/saved/');
+    return this.http.post<any>(
+      this.apiUrlRoot + 'emails/summaries/saved/', 
+      {"summary": emailSummary, "save": false}
+    );
   }
 
   setSelectedEmails(emails: any[]) {

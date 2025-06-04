@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
+import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
 
@@ -33,7 +34,14 @@ export class EmailsComponent implements OnInit {
   inboxTypeLabel: string = "All Mail";
   inboxType?: string;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private router: Router, private elRef: ElementRef, private dialog: Dialog) {
+  constructor(
+    private emailService: EmailService, 
+    public dateService: DateService, 
+    private authService: AuthService,
+    private router: Router, 
+    private elRef: ElementRef, 
+    private dialog: Dialog
+  ) {
     this.todayDate = this.dateService.formatDate(new Date());
     this.customEndDate = this.todayDate;
     this.customStartDate = this.todayDate;
@@ -43,6 +51,7 @@ export class EmailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.checkLoginStatus();
     this.todayDate = this.dateService.formatDate(new Date());
     this.fetchEmails();
   }
@@ -68,9 +77,6 @@ export class EmailsComponent implements OnInit {
       },
       (error) => {
         this.isWaiting = false;
-        if (error.status === 403) {
-          this.router.navigate(['/login']);
-        }
       }
     );
   }

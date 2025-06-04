@@ -156,10 +156,11 @@ CORS_ALLOW_METHODS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-SESSION_COOKIE_SAMESITE = 'None' # or "None" if using HTTPS in production
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SAMESITE = 'Lax' # or "None" if using HTTPS in production
 SESSION_COOKIE_SECURE = False    # Set to True only on HTTPS in prod
 
-CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False
 
 load_dotenv()

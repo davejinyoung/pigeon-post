@@ -1,1 +1,56 @@
-<button class="fixed bottom-10" (click)="connectGmail()">Connect Gmail</button>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+  <div class="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+    <div class="mb-2 flex items-center justify-center space-x-2">
+      <h1 class="text-3xl font-bold text-gray-800">
+        Welcome to Pigeon Post!
+      </h1>
+      <img
+        src="assets/carrier-pigeon.png"
+        alt="Pigeon Post Logo"
+        class="h-18 w-18 mb-2"
+      />
+    </div>
+
+    <p class="text-gray-700">
+      Manage overwhelming inboxes with concise, AI-generated summaries. 
+      Connect your Gmail account below to get started.
+    </p>
+
+    <button
+      (click)="connectGmail()"
+      class="mt-6 w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-3 transition hover:shadow-md"
+    >
+      <svg
+        class="h-6 w-6 mr-3"
+        viewBox="0 0 533.5 544.3"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M533.5 278.4c0-17.7-1.6-35-4.7-51.8H272v98h147.3c-6.4 34.5-25 63.7-53.2 83.4v69h85.8c50.2-46.2 79.6-114.6 79.6-198.6z"
+          fill="#4285F4"
+        />
+        <path
+          d="M272 544.3c72.9 0 134.2-24.1 178.9-65.5l-85.8-69c-23.8 16-54.5 25.4-93.1 25.4-71.5 0-132.2-48.2-153.8-113.1H31.4v71.2c44.7 88.6 136.7 150 240.6 150z"
+          fill="#34A853"
+        />
+        <path
+          d="M118.2 323.1c-10.6-31.8-10.6-66.2 0-98 0-0.5 0-1 0-1.5v-71.2H31.4c-44.7 88.6-44.7 194.6 0 283.2l86.8-71.2z"
+          fill="#FBBC05"
+        />
+        <path
+          d="M272 107.7c39 0 74 13.4 101.5 39.6l76.1-76.1C406.7 27.8 346.1 0 272 0 168.1 0 76.1 61.4 31.4 150l86.8 71.2C139.8 155.9 200.5 107.7 272 107.7z"
+          fill="#EA4335"
+        />
+      </svg>
+
+      <span class="text-gray-700 font-medium">Sign in with Google</span>
+    </button>
+
+    <p class="mt-8 text-sm text-gray-500">
+      Need a Google account?
+      <a href="https://accounts.google.com/signup" target="_blank" class="text-blue-500 hover:underline">
+        Create one here
+      </a>
+    </p>
+  </div>
+</div>

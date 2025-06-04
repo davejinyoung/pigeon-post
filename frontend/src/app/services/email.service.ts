@@ -75,12 +75,6 @@ export class EmailService {
     );
   }
 
-  postEmailFilters(filters: any): Observable<any> {
-    return this.http.post<any>(
-      this.apiUrlRoot + 'emails/', filters
-    );
-  }
-
   getEmailSummaries(): Observable<any> {
     const emails = this.getSelectedEmails();
     return this.postEmailSummaryRequest(emails);
@@ -88,16 +82,14 @@ export class EmailService {
 
   getSavedEmailSummaries(): Observable<any> {
     return this.http.get<any>(
-      this.apiUrlRoot + 'emails/summaries/saved/', 
-      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+      this.apiUrlRoot + 'emails/summaries/saved/'
     );
   }
 
   postEmailSummaryRequest(emails: any[], isCache=true, summaryFeedback=""): Observable<any> {
     return this.http.post<any>(
       this.apiUrlRoot + 'emails/summaries/', 
-      {"emails": emails, "cache": isCache, "summary_input": summaryFeedback}, 
-      { headers: this.getCsrfTokenHeader(), withCredentials: true }
+      {"emails": emails, "cache": isCache, "summary_input": summaryFeedback}
     );
   }
 

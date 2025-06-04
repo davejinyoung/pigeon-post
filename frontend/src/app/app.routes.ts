@@ -10,6 +10,6 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
     { path: 'summaries', component: EmailSummariesComponent, title: 'Email Summaries' },
     { path: 'summaries/saved', component: EmailSummariesComponent, title: 'Saved Email Summaries' },
-    { path: '', component: HomeComponent, title: 'Home' },
     { path: 'settings', component: SettingsComponent, title: 'Settings' },
+    { path: '**', redirectTo: 'emails' }
   ];

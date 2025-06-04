@@ -11,7 +11,6 @@ def token_required(view_func):
             request = view
 
         token = request.session.get('gmail_credentials') or request.headers.get('Authorization')
-        print("\nhere\n")
         if not token:
             return Response(
                 {"detail": "Authentication credentials were not provided."},

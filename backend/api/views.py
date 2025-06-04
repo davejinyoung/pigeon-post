@@ -1,5 +1,4 @@
 from django.shortcuts import redirect
-from django.contrib.auth import login, logout
 from django.http import JsonResponse
 from google_auth_oauthlib.flow import Flow
 from rest_framework.views import APIView
@@ -13,6 +12,17 @@ from .decorators import token_required
 
 SCOPES = ['https://mail.google.com/']
 
+class AuthStatus(APIView):
+    @token_required
+    def get(self, request):
+        return Response({'authenticated': True})
+
+
+def logout(request):
+    request.session.flush()
+    return JsonResponse({'message': 'Successfully logged out'})
+
+
 def google_auth_init(request):
     flow = Flow.from_client_secrets_file(
         'api/credentials.json',
@@ -23,7 +33,6 @@ def google_auth_init(request):
         access_type='offline',
         prompt='consent'
     )
-    print(f"Redirect URI: {flow.redirect_uri}")  # Log the redirect URI
     request.session['oauth_state'] = flow.oauth2session._state
     return redirect(auth_url)
 
@@ -61,18 +70,11 @@ def gmail_auth_callback(request):
         return JsonResponse({'error': f'Failed to handle Gmail OAuth callback: {str(e)}'}, status=500)
 
 
-class Logout(APIView):
-    def post(self, request):
-        logout(request)
-        return Response({'message': 'Logged out successfully'})
-
-
 class EmailsList(APIView):
     max_results = 30
     label_ids = []
     query = ""
 
-    @token_required
     def get(self, request):
         dt = datetime.today() - timedelta(days=1)
         self.query = f"after:{int(dt.timestamp())}"
@@ -80,7 +82,6 @@ class EmailsList(APIView):
         serializer = EmailSerializer(emails, many=True)
         return Response(serializer.data)
 
-    @token_required
     def post(self, request):
         data = request.data.get("filters")
         dt = datetime.today() - timedelta(days=data['dateRange'])
@@ -98,7 +99,6 @@ class EmailsList(APIView):
 
 
 class EmailsTrash(APIView):
-    @token_required
     def post(self, request):
         try:
             email_ids = request.data.get("email_ids", [])
@@ -123,11 +123,9 @@ class EmailSummaryList(APIView):
         serializer = EmailSummariesSerializer(get_emails_summaries(self.emails, self.is_cache, self.summary_input))
         return Response(serializer.data)
 
-    @token_required
     def get(self, request):
         return self.summarize()
 
-    @token_required
     def post(self, request):
         emails = request.data.get("emails", [])
         self.is_cache = request.data.get("cache", True)
@@ -141,7 +139,6 @@ class EmailSummaryList(APIView):
         return self.summarize()
 
 class EmailSummarySave(APIView):
-    @token_required
     def get(self, request):
         summaries = EmailSummary.objects.all()
         serializer = EmailSummarySaveSerializer(summaries, many=True)
@@ -153,7 +150,6 @@ class EmailSummarySave(APIView):
             status=200,
         )
 
-    @token_required
     def post(self, request):
         summary = request.data.get("summary", [])
         save = request.data.get("save", True)

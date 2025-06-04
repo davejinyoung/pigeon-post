@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, HostListener, TemplateRef } from '@angul
 import { CommonModule } from '@angular/common';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
+import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 
@@ -21,9 +22,17 @@ export class EmailSummariesComponent implements OnInit {
   isSavedPage = false;
   isRegenerating = false;
 
-  constructor(private emailService: EmailService, public dateService: DateService, private elRef: ElementRef, private router: Router, private dialog: Dialog) {}
+  constructor(
+    private emailService: EmailService, 
+    public dateService: DateService, 
+    private authService: AuthService,
+    private elRef: ElementRef, 
+    private router: Router, 
+    private dialog: Dialog
+  ) {}
 
   ngOnInit(): void {
+    this.authService.checkLoginStatus();
     this.fetchEmailSummaries();
   }
 
@@ -54,9 +63,6 @@ export class EmailSummariesComponent implements OnInit {
       (error) => {
         this.hasSummaryError = true;
         this.isWaiting = false;
-        if (error.status === 403) {
-          this.router.navigate(['/login']);
-        }
       }
     );
   }

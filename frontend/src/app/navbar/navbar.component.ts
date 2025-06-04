@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +10,10 @@ import { RouterModule } from '@angular/router';
 export class NavbarComponent {
   isProfileMenuHidden = true;
 
-  constructor(private elRef: ElementRef) {}
+  constructor(
+    private elRef: ElementRef, 
+    private router: Router
+  ) {}
 
   @HostListener('document:click', ['$event'])
     onClickOutside(event: MouseEvent) {
@@ -21,5 +24,11 @@ export class NavbarComponent {
 
   toggleProfileMenu() {
     this.isProfileMenuHidden = !this.isProfileMenuHidden;
+  }
+
+  logout() {
+    console.log("Logging out...");
+    window.location.href = 'http://localhost:8000/api/auth/logout/';
+    this.router.navigate(['/login']);
   }
 }

@@ -5,30 +5,29 @@ import { RouterModule, Router } from '@angular/router';
   selector: 'app-navbar',
   imports: [RouterModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
   isProfileMenuHidden = true;
 
-  constructor(
-    private elRef: ElementRef, 
-    private router: Router
-  ) {}
+  constructor(private elRef: ElementRef, private router: Router) {}
 
   @HostListener('document:click', ['$event'])
-    onClickOutside(event: MouseEvent) {
-      if (!this.elRef.nativeElement.querySelector("#profile-menu")?.contains(event.target)) {
-        this.isProfileMenuHidden = true;
-      }
+  onClickOutside(event: MouseEvent) {
+    if (
+      !this.elRef.nativeElement
+        .querySelector('#profile-menu')
+        ?.contains(event.target)
+    ) {
+      this.isProfileMenuHidden = true;
     }
+  }
 
   toggleProfileMenu() {
     this.isProfileMenuHidden = !this.isProfileMenuHidden;
   }
 
   logout() {
-    console.log("Logging out...");
     window.location.href = 'http://localhost:8000/api/auth/logout/';
-    this.router.navigate(['/login']);
   }
 }

@@ -20,7 +20,7 @@ class AuthStatus(APIView):
 
 def logout(request):
     request.session.flush()
-    return JsonResponse({'message': 'Successfully logged out'})
+    return redirect('http://localhost:4200/login')
 
 
 def google_auth_init(request):

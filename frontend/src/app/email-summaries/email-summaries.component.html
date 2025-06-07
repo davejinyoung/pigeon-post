@@ -1,4 +1,8 @@
-<div div class="flex items-center justify-center h-150" *ngIf="isWaiting else loadedSummaries">
+<div
+  div
+  class="flex items-center justify-center h-150"
+  *ngIf="isWaiting; else loadedSummaries"
+>
   Loading summaries...
 </div>
 
@@ -7,55 +11,105 @@
     There was an error loading your email summaries...
   </div>
 
-  <aside id="successAlert" class="hidden fixed z-50 flex items-center justify-center px-5 py-3 bg-green-100 text-green-800 rounded-lg bottom-4 right-4 cursor-pointer">
-    <svg class="mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-      <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>  
-    <a href="#" class="text-lg font-medium :opacity-75">  
+  <aside
+    id="successAlert"
+    class="hidden fixed z-50 flex items-center justify-center px-5 py-3 bg-green-100 text-green-800 rounded-lg bottom-4 right-4 cursor-pointer"
+  >
+    <svg
+      class="mr-2"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+    >
+      <path
+        d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572M22 4L12 14.01L9 11.01"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <a href="#" class="text-lg font-medium :opacity-75">
       Email Summary Saved!
     </a>
-    <button (click)="hideSuccessAlert()" class="cursor-pointer p-1 ml-3 rounded bg-white/20 hover:bg-white/10">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd"
+    <button
+      (click)="hideSuccessAlert()"
+      class="cursor-pointer p-1 ml-3 rounded bg-white/20 hover:bg-white/10"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-4 h-4"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
           d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-          clipRule="evenodd" />
+          clipRule="evenodd"
+        />
       </svg>
     </button>
   </aside>
-  
 
-  <div class="mt-28 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full" *ngIf="emails_with_summaries.length !== 0 else noSummaries">
+  <div
+    class="mt-28 mx-20 sm:mx-10 md:mx-20 lg:mx-40 xl:mx-75 min-w-[500px] max-w-full"
+    *ngIf="emails_with_summaries.length !== 0; else noSummaries"
+  >
     <ul class="space-y-4 m-10">
       <ng-container *ngIf="!isSavedPage; else savedSummaries">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Email Summaries</h1>
       </ng-container>
       <ng-template #savedSummaries>
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Saved Email Summaries</h1>
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+          Saved Email Summaries
+        </h1>
       </ng-template>
-      <li id="email-{{ email.id }}" class="flex items-center space-x-4" *ngFor="let email of emails_with_summaries">
-        <div class="flex border border-gray-100 p-6 rounded-lg shadow-md hover:bg-gray-50 items-center" [ngClass]="{ 'bg-gray-200': email.isRegenerating }">
-          <label class="flex flex-col" for='email-{{ email.id }}'>
+      <li
+        id="email-{{ email.id }}"
+        class="flex items-center space-x-4"
+        *ngFor="let email of emails_with_summaries"
+      >
+        <div
+          class="flex border border-gray-100 p-6 rounded-lg shadow-md hover:bg-gray-50 items-center"
+          [ngClass]="{ 'bg-gray-200': email.isRegenerating }"
+        >
+          <label class="flex flex-col" for="email-{{ email.id }}">
             <div class="flex justify-between items-center">
               <span class="text-left font-bold">FROM: {{ email.sender }}</span>
-              <span class="text-right font-bold">{{ this.dateService.convertTimestampToReadableDate(email.internal_date) }}</span>
+              <span class="text-right font-bold">{{
+                this.dateService.convertTimestampToReadableDate(
+                  email.internal_date
+                )
+              }}</span>
             </div>
             <div>
-              {{ email.subject }} <br>
+              {{ email.subject }} <br />
               <span class="text-gray-500" *ngIf="email.snippet">
-                {{ email.snippet }}<br>
+                {{ email.snippet }}<br />
               </span>
               <div class="pt-4">
-                <strong>Summary:</strong><br>
-                {{ email.summary }}<br>
+                <strong>Summary:</strong><br />
+                {{ email.summary }}<br />
               </div>
               <div class="pt-4">
-                <a class="text-blue-500" href="https://mail.google.com/mail/u/0/#inbox/{{ email.id }}" target="_blank">Original Email Link</a>
+                <a
+                  class="text-blue-500"
+                  href="https://mail.google.com/mail/u/0/#inbox/{{ email.id }}"
+                  target="_blank"
+                  >Original Email Link</a
+                >
               </div>
             </div>
           </label>
         </div>
         <div class="relative">
-          <div id="ellipsis-{{ email.id }}" (click)="toggleEmailOptionsDropdown(email.id)" class="text-xl cursor-pointer">
+          <div
+            id="ellipsis-{{ email.id }}"
+            (click)="toggleEmailOptionsDropdown(email.id)"
+            class="text-xl cursor-pointer"
+          >
             ...
           </div>
           <div
@@ -66,10 +120,31 @@
             aria-labelledby="user-menu-button"
             tabindex="-1"
           >
-            <div *ngIf="!isSavedPage else unsave">
-              <a (click)="saveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Save</a>
-              <a (click)="openModal(emailSummaryModal)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Regenerate</a>
-              <a (click)="removeEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-1">Remove</a>
+            <div *ngIf="!isSavedPage; else unsave">
+              <a
+                (click)="saveEmailSummary(email.id)"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+                id="user-menu-item-0"
+                >Save</a
+              >
+              <a
+                (click)="openModal(emailSummaryModal)"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+                id="user-menu-item-1"
+                >Regenerate</a
+              >
+              <a
+                (click)="removeEmailSummary(email.id)"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+                id="user-menu-item-1"
+                >Remove</a
+              >
             </div>
             <ng-template #emailSummaryModal>
               <div class="p-6 bg-white rounded-lg shadow-lg w-96">
@@ -84,16 +159,33 @@
                   ></textarea>
                 </div>
                 <div class="flex justify-end space-x-2">
-                  <button (click)="closeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">
+                  <button
+                    (click)="closeModal()"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
+                  >
                     Close
                   </button>
-                  <button (click)="regenerateEmailSummary(email.id, summaryFeedback.value)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                  <button
+                    (click)="
+                      regenerateEmailSummary(email.id, summaryFeedback.value)
+                    "
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                  >
                     Regenerate
                   </button>
                 </div>
               </div>
             </ng-template>
-            <ng-template #unsave><a (click)="unsaveEmailSummary(email.id)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-0">Unsave</a></ng-template>
+            <ng-template #unsave
+              ><a
+                (click)="unsaveEmailSummary(email.id)"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+                id="user-menu-item-0"
+                >Unsave</a
+              ></ng-template
+            >
           </div>
         </div>
       </li>

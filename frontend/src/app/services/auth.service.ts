@@ -6,10 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EmailService } from './email.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   constructor(
     private http: HttpClient,
     private emailService: EmailService,
@@ -17,21 +16,23 @@ export class AuthService {
   ) {}
 
   checkLoginStatus(): void {
-    this.http.get(
-      'http://localhost:8000/api/auth/status/', 
-      { headers: this.emailService.getCsrfTokenHeader(), withCredentials: true }
-    ).subscribe(
-      (response: any) => {
-        console.log('Login status:', response);
-        if (response.redirect) {
-          window.location.href = response.redirect;
+    this.http
+      .get('http://localhost:8000/api/auth/status/', {
+        headers: this.emailService.getCsrfTokenHeader(),
+        withCredentials: true,
+      })
+      .subscribe(
+        (response: any) => {
+          console.log('Login status:', response);
+          if (response.redirect) {
+            window.location.href = response.redirect;
+          }
+        },
+        (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+          }
         }
-      },
-      (error) => {
-        if (error.status === 403) {
-          this.router.navigate(['/login']);
-        }
-      }
-    );
+      );
   }
 }

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EmailService {
   private apiUrlRoot = 'http://localhost:8000/api/';
@@ -17,7 +17,7 @@ export class EmailService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  getCsrfTokenHeader(): HttpHeaders  {
+  getCsrfTokenHeader(): HttpHeaders {
     if (isPlatformBrowser(this.platformId)) {
       const name = 'csrftoken=';
       const decodedCookie = decodeURIComponent(document.cookie);
@@ -45,21 +45,22 @@ export class EmailService {
     }
 
     if (typeof localStorage === 'undefined') {
-      return this.http.get<any[]>(
-        this.apiUrlRoot + 'emails/', 
-        { headers: this.getCsrfTokenHeader(), withCredentials: true }
-      );
-    };
+      return this.http.get<any[]>(this.apiUrlRoot + 'emails/', {
+        headers: this.getCsrfTokenHeader(),
+        withCredentials: true,
+      });
+    }
 
     let emailFilters: emailFilters = {
       dateRange: JSON.parse(localStorage.getItem('emailFilters') || '0'),
       labels: labels,
       query: '',
-      maxResults: 30
-    }
+      maxResults: 30,
+    };
 
     return this.http.post<any[]>(
-      this.apiUrlRoot + 'emails/', {"filters": emailFilters}, 
+      this.apiUrlRoot + 'emails/',
+      { filters: emailFilters },
       { headers: this.getCsrfTokenHeader(), withCredentials: true }
     );
   }
@@ -70,7 +71,8 @@ export class EmailService {
     }
     localStorage.removeItem('selectedEmails');
     return this.http.post<any>(
-      this.apiUrlRoot + 'emails/trash/', {"email_ids": emails}, 
+      this.apiUrlRoot + 'emails/trash/',
+      { email_ids: emails },
       { headers: this.getCsrfTokenHeader(), withCredentials: true }
     );
   }
@@ -81,30 +83,32 @@ export class EmailService {
   }
 
   getSavedEmailSummaries(): Observable<any> {
-    return this.http.get<any>(
-      this.apiUrlRoot + 'emails/summaries/saved/'
-    );
+    return this.http.get<any>(this.apiUrlRoot + 'emails/summaries/saved/');
   }
 
-  postEmailSummaryRequest(emails: any[], isCache=true, summaryFeedback=""): Observable<any> {
-    return this.http.post<any>(
-      this.apiUrlRoot + 'emails/summaries/', 
-      {"emails": emails, "cache": isCache, "summary_input": summaryFeedback}
-    );
+  postEmailSummaryRequest(
+    emails: any[],
+    isCache = true,
+    summaryFeedback = ''
+  ): Observable<any> {
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/', {
+      emails: emails,
+      cache: isCache,
+      summary_input: summaryFeedback,
+    });
   }
 
   saveEmailSummary(emailSummary: any): Observable<any> {
-    return this.http.post<any>(
-      this.apiUrlRoot + 'emails/summaries/saved/', 
-      {"summary": emailSummary}
-    );
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {
+      summary: emailSummary,
+    });
   }
 
   unsaveEmailSummary(emailSummary: any): Observable<any> {
-    return this.http.post<any>(
-      this.apiUrlRoot + 'emails/summaries/saved/', 
-      {"summary": emailSummary, "save": false}
-    );
+    return this.http.post<any>(this.apiUrlRoot + 'emails/summaries/saved/', {
+      summary: emailSummary,
+      save: false,
+    });
   }
 
   setSelectedEmails(emails: any[]) {

@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class DateService {
-  constructor() { }
+  constructor() {}
 
   formatDate(date: Date): string {
     const year = date.getFullYear();
@@ -16,16 +16,16 @@ export class DateService {
   convertTimestampToReadableDate(datetime: string): string {
     const isoDatetime = datetime.replace(' ', 'T') + 'Z'; // Convert to ISO format and append 'Z' for UTC
     const date = new Date(isoDatetime);
-  
+
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'long',
       year: 'numeric',
-      month: 'long', 
+      month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-      timeZone: 'America/Los_Angeles'
+      timeZone: 'America/Los_Angeles',
     }).format(date);
   }
 }

@@ -1,4 +1,10 @@
-import { Component, OnInit, ElementRef, HostListener, TemplateRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  HostListener,
+  TemplateRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmailService } from '../services/email.service';
 import { DateService } from '../services/date.service';
@@ -6,14 +12,12 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 
-
 @Component({
   selector: 'app-email-summaries',
   imports: [CommonModule],
   templateUrl: './email-summaries.component.html',
-  styleUrl: './email-summaries.component.scss'
+  styleUrl: './email-summaries.component.scss',
 })
-
 export class EmailSummariesComponent implements OnInit {
   emails_with_summaries: any[] = [];
   hasSummaryError = false;
@@ -23,11 +27,11 @@ export class EmailSummariesComponent implements OnInit {
   isRegenerating = false;
 
   constructor(
-    private emailService: EmailService, 
-    public dateService: DateService, 
+    private emailService: EmailService,
+    public dateService: DateService,
     private authService: AuthService,
-    private elRef: ElementRef, 
-    private router: Router, 
+    private elRef: ElementRef,
+    private router: Router,
     private dialog: Dialog
   ) {}
 
@@ -38,10 +42,18 @@ export class EmailSummariesComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
-    this.emails_with_summaries.forEach(email => {
-      const dropdown = this.elRef.nativeElement.querySelector(`#email-options-dropdown-${email.id}`);
-      const ellipsis = this.elRef.nativeElement.querySelector(`#ellipsis-${email.id}`);
-      if (dropdown && !dropdown.contains(event.target) && !ellipsis.contains(event.target)) {
+    this.emails_with_summaries.forEach((email) => {
+      const dropdown = this.elRef.nativeElement.querySelector(
+        `#email-options-dropdown-${email.id}`
+      );
+      const ellipsis = this.elRef.nativeElement.querySelector(
+        `#ellipsis-${email.id}`
+      );
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        !ellipsis.contains(event.target)
+      ) {
         dropdown.classList.add('hidden');
       }
     });
@@ -49,13 +61,15 @@ export class EmailSummariesComponent implements OnInit {
 
   fetchEmailSummaries(): void {
     this.isWaiting = true;
-    const fetchFn = this.router.url === '/summaries/saved'
-      ? this.emailService.getSavedEmailSummaries()
-      : this.emailService.getEmailSummaries();
+    const fetchFn =
+      this.router.url === '/summaries/saved'
+        ? this.emailService.getSavedEmailSummaries()
+        : this.emailService.getEmailSummaries();
 
     fetchFn.subscribe(
       (data: any) => {
-        this.emails_with_summaries = data.summaries || data.emails_with_summaries || [];
+        this.emails_with_summaries =
+          data.summaries || data.emails_with_summaries || [];
         this.hasSummaryError = false;
         this.isWaiting = false;
         this.isSavedPage = this.router.url === '/summaries/saved';
@@ -68,7 +82,9 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   toggleEmailOptionsDropdown(emailId: string): void {
-    const dropdown = document.getElementById(`email-options-dropdown-${emailId}`);
+    const dropdown = document.getElementById(
+      `email-options-dropdown-${emailId}`
+    );
     if (dropdown?.classList.contains('hidden')) {
       dropdown.classList.remove('hidden');
     } else {
@@ -77,7 +93,7 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   saveEmailSummary(emailId: string): void {
-    const email = this.emails_with_summaries.find(e => e.id === emailId);
+    const email = this.emails_with_summaries.find((e) => e.id === emailId);
     this.toggleEmailOptionsDropdown(emailId);
 
     if (!email) {
@@ -95,13 +111,13 @@ export class EmailSummariesComponent implements OnInit {
         summary: email.summary,
         internal_date: email.internal_date,
         thread_id: email.thread_id,
-      }
+      },
     };
 
     this.emailService.saveEmailSummary(payload).subscribe(
       (response) => {
         console.log('Email summary saved successfully:', response);
-        document.getElementById("successAlert")?.classList.remove('hidden');  
+        document.getElementById('successAlert')?.classList.remove('hidden');
       },
       (error) => {
         console.error('Error saving email summary:', error);
@@ -110,11 +126,11 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   hideSuccessAlert(): void {
-    document.getElementById("successAlert")?.classList.add('hidden'); 
+    document.getElementById('successAlert')?.classList.add('hidden');
   }
 
   unsaveEmailSummary(emailId: string): void {
-    const email = this.emails_with_summaries.find(e => e.id === emailId);
+    const email = this.emails_with_summaries.find((e) => e.id === emailId);
     this.toggleEmailOptionsDropdown(emailId);
 
     if (!email) {
@@ -132,13 +148,15 @@ export class EmailSummariesComponent implements OnInit {
         summary: email.summary,
         internal_date: email.internal_date,
         thread_id: email.thread_id,
-      }
+      },
     };
 
     this.emailService.unsaveEmailSummary(payload).subscribe(
       (response) => {
         console.log('Email summary unsaved successfully:', response);
-        this.emails_with_summaries = this.emails_with_summaries.filter(e => e.id !== emailId);
+        this.emails_with_summaries = this.emails_with_summaries.filter(
+          (e) => e.id !== emailId
+        );
       },
       (error) => {
         console.error('Error unsaving email summary:', error);
@@ -147,21 +165,25 @@ export class EmailSummariesComponent implements OnInit {
   }
 
   regenerateEmailSummary(emailId: string, summaryFeedback: string): void {
-    const index = this.emails_with_summaries.findIndex(e => e.id === emailId);
+    const index = this.emails_with_summaries.findIndex((e) => e.id === emailId);
     const email = this.emails_with_summaries[index];
     this.toggleEmailOptionsDropdown(emailId);
     this.emails_with_summaries[index]['isRegenerating'] = true;
-    this.emailService.postEmailSummaryRequest([email], false, summaryFeedback).subscribe(
-      (data) => {
-        this.emails_with_summaries[index].summary = data.emails_with_summaries[0].summary;
+    this.emailService
+      .postEmailSummaryRequest([email], false, summaryFeedback)
+      .subscribe((data) => {
+        this.emails_with_summaries[index].summary =
+          data.emails_with_summaries[0].summary;
         this.emails_with_summaries[index]['isRegenerating'] = false;
-      })
+      });
     this.closeModal();
   }
 
   removeEmailSummary(emailId: string): void {
     document.getElementById(`email-${emailId}`)?.remove();
-    this.emails_with_summaries = this.emails_with_summaries.filter(email => email.id !== emailId);
+    this.emails_with_summaries = this.emails_with_summaries.filter(
+      (email) => email.id !== emailId
+    );
     this.emailService.setSelectedEmails(this.emails_with_summaries);
   }
 

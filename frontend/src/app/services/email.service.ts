@@ -79,6 +79,9 @@ export class EmailService {
 
   getEmailSummaries(): Observable<any> {
     const emails = this.getSelectedEmails();
+    if (emails.length === 0) {
+      return of({ success: true, summaries: [] });
+    }
     return this.postEmailSummaryRequest(emails);
   }
 

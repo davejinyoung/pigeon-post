@@ -7,7 +7,6 @@ import { LoginComponent } from './login/login.component';
 
 export const routes: Routes = [
   { path: 'emails', component: EmailsComponent, title: 'Emails' },
-  { path: 'login', component: LoginComponent, title: 'Login' },
   {
     path: 'summaries',
     component: EmailSummariesComponent,
@@ -20,4 +19,5 @@ export const routes: Routes = [
   },
   { path: 'settings', component: SettingsComponent, title: 'Settings' },
   { path: '**', redirectTo: 'emails' },
+  { path: 'login', component: LoginComponent, title: 'Login' },
 ];

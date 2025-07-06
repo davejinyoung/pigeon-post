@@ -76,11 +76,15 @@ class EmailsList(APIView):
     query = ""
 
     def get(self, request):
-        dt = datetime.today() - timedelta(days=1)
-        self.query = f"after:{int(dt.timestamp())}"
-        emails = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
-        serializer = EmailSerializer(emails, many=True)
-        return Response(serializer.data)
+        if 'emails' in request.session:
+            serializer = EmailSerializer(request.session['emails'], many=True)
+            return Response(serializer.data)
+        else:
+            dt = datetime.today() - timedelta(days=1)
+            self.query = f"after:{int(dt.timestamp())}"
+            request.session['emails'] = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
+            serializer = EmailSerializer(request.session['emails'], many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         data = request.data.get("filters")
@@ -93,8 +97,8 @@ class EmailsList(APIView):
         self.query = f"after:{int(dt.timestamp())}"
         self.label_ids = data['labels']
         self.max_results = data['maxResults']
-        emails = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
-        serializer = EmailSerializer(emails, many=True)
+        request.session['emails'] = get_emails(request, max_results=self.max_results, label_ids=tuple(self.label_ids), query=self.query)
+        serializer = EmailSerializer(request.session['emails'], many=True)
         return Response(serializer.data)
 
 

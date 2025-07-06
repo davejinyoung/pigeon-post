@@ -44,7 +44,7 @@ export class EmailService {
       localStorage.setItem('emailFilters', JSON.stringify(dateRange));
     }
 
-    if (typeof localStorage === 'undefined') {
+    if (typeof localStorage === 'undefined' || !dateRange) {
       return this.http.get<any[]>(this.apiUrlRoot + 'emails/', {
         headers: this.getCsrfTokenHeader(),
         withCredentials: true,

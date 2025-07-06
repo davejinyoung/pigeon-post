@@ -24,8 +24,8 @@ export class EmailsComponent implements OnInit {
   emails: any[] = [];
   emailsPage: any[] = [];
   selectedEmailIds: { [key: string]: boolean } = {};
-  isDateRangeMenuHidden = true;
-  isInboxTypeMenuHidden = true;
+  isDateRangeMenuHidden: boolean = true;
+  isInboxTypeMenuHidden: boolean = true;
   isWaiting = false;
   todayDate: string = '';
   customStartDate: string = '';
@@ -36,8 +36,8 @@ export class EmailsComponent implements OnInit {
   currentPage: number = 1;
   emailsPerPage: number = 10;
   emailFilters: emailFilters = new emailFilters();
-  dateRangeLabel: string = 'Last 24 Hours';
-  inboxTypeLabel: string = 'All Mail';
+  dateRangeLabel: string = '';
+  inboxTypeLabel: string = '';
   inboxType?: string;
 
   constructor(
@@ -59,6 +59,14 @@ export class EmailsComponent implements OnInit {
   ngOnInit(): void {
     this.authService.checkLoginStatus();
     this.todayDate = this.dateService.formatDate(new Date());
+    if (typeof localStorage !== 'undefined') {
+      this.dateRangeLabel = localStorage.getItem('dateRange') || 'Last 24 Hours';
+      this.inboxTypeLabel = localStorage.getItem('inboxType') || 'All Mail';
+      const filters = localStorage.getItem('filters');
+      if (filters) {
+        this.emailFilters = JSON.parse(filters);
+      }
+    }
     this.fetchEmails();
   }
 
@@ -86,7 +94,7 @@ export class EmailsComponent implements OnInit {
   fetchEmails(dateRange?: number): void {
     this.isWaiting = true;
     this.currentPage = 1;
-    this.emailService.getEmails(dateRange, this.inboxType).subscribe(
+    this.emailService.getEmails(dateRange, this.emailFilters.inboxType).subscribe(
       (data) => {
         this.emails = data;
         this.initializeEmails();
@@ -247,10 +255,9 @@ export class EmailsComponent implements OnInit {
 
   setSelectInboxTypeFilters(filter?: string): void {
     if (filter == undefined) {
-      this.inboxType = undefined;
       this.inboxTypeLabel = 'All Mail';
     } else {
-      this.inboxType = filter;
+      this.emailFilters.inboxType = filter;
       this.inboxTypeLabel = '';
       if (filter.substring(0, 8) == 'category') {
         this.inboxTypeLabel =
@@ -274,19 +281,24 @@ export class EmailsComponent implements OnInit {
 
   applyFilters(): void {
     this.emails = [];
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('dateRange', this.dateRangeLabel);
+      localStorage.setItem('inboxType', this.inboxTypeLabel);
+      localStorage.setItem('filters', JSON.stringify(this.emailFilters));
+    }
     this.fetchEmails(this.emailFilters.dateRange);
   }
 }
 
 class emailFilters {
   dateRange: number;
-  labels: string[];
+  inboxType: string;
   query: string;
   maxResults: number;
 
   constructor() {
     this.dateRange = 0;
-    this.labels = [];
+    this.inboxType = '';
     this.query = '';
     this.maxResults = 10;
   }

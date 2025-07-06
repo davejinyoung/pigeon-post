@@ -9,6 +9,7 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class NavbarComponent {
   isProfileMenuHidden = true;
+  isMobileMenuHidden = true;
 
   constructor(private elRef: ElementRef, private router: Router) {}
 
@@ -21,10 +22,25 @@ export class NavbarComponent {
     ) {
       this.isProfileMenuHidden = true;
     }
+    
+    if (
+      !this.elRef.nativeElement
+        .querySelector('#mobile-menu-button')
+        ?.contains(event.target) &&
+      !this.elRef.nativeElement
+        .querySelector('#mobile-menu')
+        ?.contains(event.target)
+    ) {
+      this.isMobileMenuHidden = true;
+    }
   }
 
   toggleProfileMenu() {
     this.isProfileMenuHidden = !this.isProfileMenuHidden;
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuHidden = !this.isMobileMenuHidden;
   }
 
   logout() {

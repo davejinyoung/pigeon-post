@@ -18,6 +18,5 @@ export const routes: Routes = [
     title: 'Saved Email Summaries',
   },
   { path: 'settings', component: SettingsComponent, title: 'Settings' },
-  { path: '**', redirectTo: 'emails' },
   { path: 'login', component: LoginComponent, title: 'Login' },
 ];

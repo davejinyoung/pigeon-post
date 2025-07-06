@@ -16,9 +16,10 @@ export class AuthService {
   ) {}
 
   checkLoginStatus(): void {
+    let headers = this.emailService.getCsrfTokenHeader()
     this.http
       .get('http://localhost:8000/api/auth/status/', {
-        headers: this.emailService.getCsrfTokenHeader(),
+        headers: headers,
         withCredentials: true,
       })
       .subscribe(
@@ -29,7 +30,7 @@ export class AuthService {
           }
         },
         (error) => {
-          if (error.status === 403) {
+          if (error.status === 403 && headers === this.emailService.getCsrfTokenHeader()) {
             this.router.navigate(['/login']);
           }
         }

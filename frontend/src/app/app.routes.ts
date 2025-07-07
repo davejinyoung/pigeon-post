@@ -19,4 +19,5 @@ export const routes: Routes = [
   },
   { path: 'settings', component: SettingsComponent, title: 'Settings' },
   { path: 'login', component: LoginComponent, title: 'Login' },
+  { path: '', redirectTo: '/emails', pathMatch: 'full' },
 ];

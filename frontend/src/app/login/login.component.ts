@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
 })
 export class LoginComponent {
   connectGmail() {
-    window.location.href = 'http://localhost:8000/api/auth/gmail/init/';
+    window.location.href = '/api/auth/gmail/init/';
   }
 }

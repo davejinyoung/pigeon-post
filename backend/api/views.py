@@ -9,6 +9,7 @@ from .services import get_emails, get_emails_summaries, trash_emails
 from .serializers import EmailSummariesSerializer, EmailSerializer, EmailSummarySaveSerializer
 from datetime import datetime, timedelta
 from .decorators import token_required
+from django.conf import settings
 
 SCOPES = ['https://mail.google.com/']
 
@@ -20,7 +21,7 @@ class AuthStatus(APIView):
 
 def logout(request):
     request.session.flush()
-    return redirect('http://localhost:4200/login')
+    return redirect(settings.FRONTEND_URL +  '/login')
 
 
 def google_auth_init(request):
@@ -65,7 +66,7 @@ def gmail_auth_callback(request):
             'scopes': creds.scopes
         }
 
-        return redirect('http://localhost:4200/emails')
+        return redirect(settings.FRONTEND_URL + '/emails')
     except Exception as e:
         return JsonResponse({'error': f'Failed to handle Gmail OAuth callback: {str(e)}'}, status=500)
 

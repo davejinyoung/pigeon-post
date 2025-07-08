@@ -7,7 +7,7 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
   providedIn: 'root',
 })
 export class EmailService {
-  private apiUrlRoot = 'http://localhost:8000/api/';
+  private apiUrlRoot = '/api/';
 
   private selectedEmailsSubject = new BehaviorSubject<string[]>([]);
   selectedEmails$ = this.selectedEmailsSubject.asObservable();

@@ -44,6 +44,6 @@ export class NavbarComponent {
   }
 
   logout() {
-    window.location.href = 'http://localhost:8000/api/auth/logout/';
+    window.location.href = '/api/auth/logout/';
   }
 }

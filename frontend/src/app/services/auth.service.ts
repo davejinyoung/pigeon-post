@@ -18,7 +18,7 @@ export class AuthService {
   checkLoginStatus(): void {
     let headers = this.emailService.getCsrfTokenHeader()
     this.http
-      .get('http://localhost:8000/api/auth/status/', {
+      .get('/api/auth/status/', {
         headers: headers,
         withCredentials: true,
       })
